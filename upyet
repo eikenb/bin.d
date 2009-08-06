@@ -1,0 +1,53 @@
+#!/bin/sh
+
+# XXX  change to use fping
+
+# kavi - 66.179.20.222
+# google - 64.233.187.99
+# isp nameserver - 
+#   primary 209.225.8.42
+#   secondary 24.240.141.241 - filtered, don't use
+#
+IP=68.180.206.184 # yahoo
+AIP=64.233.187.99 # google
+GIP=68.118.117.233
+ping=
+count=1
+
+usage () {
+    echo "-p ping"
+    echo "-c N count N times"
+    echo "-i IP ping IP"
+    echo "-a alternate IP"
+    echo "-g ISP gateway"
+    exit 0
+}
+
+while getopts aghpi:c: arg; do
+    case $arg in
+        p) ping=true; [ $count -eq 1 ] && count= ;;
+        c) count=$OPTARG;;
+        i) IP=$OPTARG;;
+        a) IP=$AIP;;
+        g) IP=$GIP;;
+        h) usage;;
+    esac
+done
+
+if [ -n "$ping" ] ; then
+    if [ -n "$count" ]; then
+        /bin/ping -c $count $IP
+    else
+        /bin/ping $IP
+    fi
+else
+    date;
+    until /bin/ping -q -c $count $IP; do
+        sleep 5;
+        date;
+    done
+    exec /usr/bin/play ~/.themes/Sounds/itsawak2.wav;
+fi
+
+#/usr/bin/aplay /usr/local/share/sounds/hamster.au;
+

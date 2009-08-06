@@ -1,0 +1,5 @@
+#!/bin/sh
+
+#/usr/bin/play /usr/local/share/sounds/thunder.wav
+exec /usr/bin/play ~/.themes/Sounds/thunder.wav > /dev/null 2>&1
+

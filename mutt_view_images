@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# Unpacks all attached files and kicks off an image view on the directory (in
+# this case gqview which I like). Cleans up the images/directory afterwards.
+#
+# To use from mutt include this keybinding (replace <F9> with your preference) 
+# in the approparite config file.
+#
+## view a bunch of attached images
+#macro  index  <F9>  "<copy-message>/tmp/tmpbox\n<enter><shell-escape>~/bin/mutt-view-images.sh\n" "View images"
+#macro  pager  <F9>  "<copy-message>/tmp/tmpbox\n<enter><shell-escape>~/bin/mutt-view-images.sh\n" "View images"
+
+
+
+tmpdir=/tmp/mutthtmltmpdir
+mbox=/tmp/tmpbox
+
+mkdir $tmpdir
+cd $tmpdir
+files=`munpack -q -t -C $tmpdir $mbox | sed 's/([^()]\+)//g'`
+
+(gqview ; rm $files $mbox; rmdir $tmpdir) &
+
+## vim: ft=sh

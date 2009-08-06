@@ -1,0 +1,14 @@
+#!/bin/sh
+
+if [ $# -lt 2 ]; then
+    echo "Usage: $0 dir1 dir2"
+else
+    cd $1
+    ls -A `find . 2> /dev/null` > $HOME/.tmp/dirdiff1
+    cd $2
+    ls -A `find . 2> /dev/null` > $HOME/.tmp/dirdiff2
+    echo diffdir1 $1
+    echo diffdir2 $2
+    diff -U 0 $HOME/.tmp/dirdiff1 $HOME/.tmp/dirdiff2
+fi
+

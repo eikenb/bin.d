@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# change all directories with spaces in their names to have
+# underscores in their places
+#zmv '(**/)(*)(#q/)' '$1${2// /_}'
+
+find . -type d | while read d; do
+    if ls "$d"/*.mp3 > /dev/null 2>&1; then
+        echo +++++ Processing "$d"
+        /usr/bin/mp3gain -s r "$d"/*.mp3
+        ape2id3.py -f "$d"/*.mp3
+        echo; echo
+    fi
+done
+

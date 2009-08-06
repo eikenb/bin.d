@@ -1,0 +1,174 @@
+#!/usr/bin/env python
+
+"""
+Copyright (c) <2009> John Eikenberry <jae@zhar.net>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+Please let me know if you find any problems.
+
+Original inspiration based on recipe at:
+    http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/157437
+
+Changes since initial version:
+    Made content-type header regex case insensitive.
+
+Usage: $ corpuscleaner MBOX
+
+Purpose:
+
+Reducing the disk space taken up by my spam corpus as much as possible while
+leaving the corpus useful for training my bayesian spam filter. Tested with
+bogofilter.  Not sure about compatibility with other filters.
+
+This program processes all the mail in the MBOX file...
+- removing duplicates (compares md5 hashs of body)
+- removing image/code attachment content while leaving their headers intact [1]
+- removing email with bad boundaries specified (they are annoying to deal with)
+
+Saves output to MBOX.out. Which you should then be able to store and use as a
+corpus for your spamfilter. Note that the MBOX.out is still a valid mbox.
+
+[1] bogofilter processes attachment headers but ignores binary content
+
+"""
+
+import mailbox
+import sys
+import md5
+import re
+
+
+LF = '\x0a'
+BIG = 10000
+
+class counters:
+    duplicates = 0
+    attachments = 0
+    bad = 0
+    total = 0
+    big = 0
+
+def main():
+    mailboxname_in = sys.argv[1]
+    mailboxname_out = mailboxname_in + '.out'
+    process_mailbox(mailboxname_in, mailboxname_out, spam_cleaner)
+    print ; print
+    print 'total spam processed  ', counters.total
+    print 'duplicates removed    ', counters.duplicates
+    print 'attachements removed  ', counters.attachments
+    print 'bad boundaries        ', counters.bad
+    print 'big documents         ', counters.big
+
+boundary_find = re.compile('boundary="?([^"\n]+)"?;?').search
+type_find = re.compile('Content-Type: (?:image|application)/',re.I).search
+
+def spam_cleaner(msg, document, _registry = {}):
+    """ Removes duplicates by returning None.
+        Replaces binary attachements content with marker string.
+        Returns processed document body (if non-dup).
+    """
+    digest = md5.new(document).hexdigest()
+    if _registry.has_key(digest):
+        counters.duplicates += 1
+        return # removes dups
+    _registry[digest]=None
+
+    content_type = msg.get('content-type','')
+    if 'multipart' in content_type:
+        try:
+            boundary = boundary_find(content_type).group(1)
+        except AttributeError:
+            counters.bad += 1
+            return
+        parts = document.count(boundary)-1
+        loc = document.find(boundary)
+        while parts > 0:
+            b_end = loc+len(boundary)
+            if type_find(document[loc:b_end+42]):
+                sec_start = document.find('\n\n',b_end)+2
+                sec_end = document.find(boundary, b_end)
+                _marker = "XXX\n"
+                if document[sec_start:sec_end] != _marker:
+                    document = document[:sec_start]+_marker+document[sec_end:]
+                    counters.attachments += 1
+            parts -= 1
+            loc = document.find(boundary,loc+len(boundary))
+
+    # just to be sure we haven't screwed up our formatting
+    while document[-2:] != "\n\n":
+        document += "\n"
+    return document
+
+def process_mailbox(mailboxname_in, mailboxname_out, filter_function):
+    """ This processes a each message in the 'in' mailbox and optionally
+        writes the message to the 'out' mailbox. Each message is passed to
+        the  filter_function. The filter function may return None to ignore
+        the message or may return the document to be saved in the 'out' mailbox.
+    """
+
+    # note that I tried a version that used the email module but all the extra
+    # parsing tooks way to much time. the basic string parsing done in the
+    # filter method is much faster (order of magnitude at least)
+    mb = mailbox.UnixMailbox(file(mailboxname_in,'r'))
+    fout = file(mailboxname_out, 'w')
+
+    msg = mb.next()
+    progress = 0
+    while msg is not None:
+        progress += 1
+        if not (progress % 1000):
+            print progress, msg.get('subject')
+        # Properties of msg cannot be modified, so we pull out the
+        # document to handle is separately. We keep msg around to
+        # keep track of headers and stuff.
+        document = msg.fp.read()
+
+        document = filter_function (msg, document)
+
+        if document is not None:
+            if len(document) > BIG:
+                counters.big += 1
+            else:
+                write_message(fout, msg, document)
+
+        msg = mb.next()
+
+    counters.total = progress
+    fout.close()
+
+def write_message(fout, msg, document):
+    """ This writes an 'rfc822' message to a given file in mbox format.
+        This assumes that the arguments 'msg' and 'document' were generate
+        by the 'mailbox' module. The important thing to remember is that the
+        document MUST end with two linefeeds ('\n').
+    """
+    fout.write(msg.unixfrom)
+    for l in msg.headers:
+        fout.write (l)
+    fout.write(LF)
+    fout.write(document)
+
+if __name__ == '__main__':
+    assert len(sys.argv) == 2, __doc__
+    main ()
+
+
+

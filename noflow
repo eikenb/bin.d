@@ -1,0 +1,5 @@
+#!/bin/sh
+
+stty -ixon start undef stop undef
+
+exec "$@"

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+[ -e $1 ] && echo "$1 exists" && exit 1
+
+mkdir -p $1/cur $1/new $1/tmp
+

@@ -1,0 +1,60 @@
+#!/bin/zsh
+#
+# Automates retraining of bogofilter.
+#
+# Appends together ham/spam into 2 mboxes and feeds those to training program
+# (bogominitrain.pl at the moment). 
+#
+# Cleans up tmp training mboxes. 
+
+ham_files=(agents aiexpert comm domain drdobbsjournal games ham howto inbox jokes kavi knoll lists mercury-users nvidia openbox pygame pypy python python-logic root zmysqlda zsh work/inbox work/tips work/ham)
+ham=()
+for hf in $ham_files; do
+    ham+=(~/Mail/$hf)
+done
+for file in ~/Mail/sentmail/*(.); do
+    ham+=($file)
+done
+
+# spam is much simpler as I collect my spam in one place
+spam=(~/Mail/spam-training)
+
+hamfile=~/.tmp/ham
+spamfile=~/.tmp/spam
+
+rm -f $hamfile
+rm -f $spamfile
+
+for file in $ham; do
+    cat $file >> $hamfile
+done
+
+for file in $spam; do
+    cat $file >> $spamfile
+done
+
+bogotrain=~/bin/bogominitrain.py
+echo "perl $bogotrain -fnv -b '-o 0.95,0.35' $hamfile $spamfile"
+perl $bogotrain -fnv -b '-o 0.95,0.35' $hamfile $spamfile
+echo 'done. removing tmp files'
+rm $hamfile
+rm $spamfile
+
+
+
+
+# This was a bit to clean spamassassin headers off my email so it wouldn't
+# screw with training the bayesian filters. Btw, I was unimpressed with
+# spamassassin (used it for about a year).
+#
+#cleandir=Mailclean
+#backdir=Mailback
+## clean spamassassin headers from email
+#for file in Mail/*(.); do
+#    echo -n "starting processing $file..."
+#    cp $file $backdir/${file#Mail/}
+#    formail -s spamassassin -d < $file > $cleandir/${file#Mail/}
+#    mv $cleandir/${file#Mail/} $file
+#    echo "done"
+#done
+
