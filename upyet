@@ -45,7 +45,7 @@ if [ "$cmd" = "downyet" ]; then
 	/bin/ping -W 2 -i $interval -c $count $IP
     else
 	/bin/ping -W 2 -i $interval $IP
-	exec /usr/bin/play ~/.themes/Sounds/thunder.wav;
+	exec /usr/bin/play ~/.themes/sounds/thunder.wav;
     fi
 else
     if [ -n "$ping" ] ; then
@@ -61,7 +61,7 @@ else
 	    sleep 5;
 	    date;
 	done
-	exec /usr/bin/play ~/.themes/Sounds/itsawak2.wav;
+	exec /usr/bin/play ~/.themes/sounds/itsawak2.wav;
     fi
 fi
 
