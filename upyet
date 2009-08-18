@@ -8,7 +8,8 @@
 #   primary 209.225.8.42
 #   secondary 24.240.141.241 - filtered, don't use
 #
-IP=68.180.206.184 # yahoo
+#IP=68.180.206.184 # yahoo
+IP=69.147.114.224 # yahoo
 AIP=64.233.187.99 # google
 GIP=68.118.117.233
 ping=
