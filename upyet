@@ -15,7 +15,7 @@ GIP=68.118.117.233
 ping=
 count=1
 interval=1
-timeout=2
+timeout=1
 cmd=`basename $0`
 
 usage () {
@@ -47,7 +47,13 @@ done
 [ -n "$1" ] && IP=$1
 
 if [ "$cmd" = "downyet" ]; then
-    /bin/ping -W $timeout -i $interval $IP
+    # try this sometime. curious if -W works.
+    #/bin/ping -W $timeout -i $interval $IP
+    date;
+    until ! /bin/ping -w $timeout -c $count $IP; do
+        sleep 2
+        date;
+    done
     exec /usr/bin/play ~/.themes/sounds/thunder.wav;
 else
     if [ -n "$ping" ] ; then
