@@ -15,56 +15,57 @@ GIP=68.118.117.233
 ping=
 count=1
 interval=1
+timeout=2
 cmd=`basename $0`
 
 usage () {
     echo "usage: $cmd [options] [IP]"
-    echo "-p ping"
-    echo "-c N count N times"
     echo "-i ping interval"
+    if [ "$cmd" = "upyet" ]; then
+        echo "-p ping"
+        echo "-c N count N times"
+    else
+        echo '-w response timeout'
+    fi
     echo "-a alternate IP"
     echo "-g ISP gateway"
-    [ "$cmd" = "downyet" ] && echo '-w response timeout'
     exit 0
 }
 
-while getopts aghpi:c: arg; do
+while getopts aghpi:c:w: arg; do
     case $arg in
         p) ping=true; [ $count -eq 1 ] && count= ; shift;;
         c) count=$OPTARG; shift; shift;;
-	i) interval=$OPTARG; shift; shift;;
+        i) interval=$OPTARG; shift; shift;;
         a) IP=$AIP; shift;;
         g) IP=$GIP; shift;;
-	h) usage;;
+        w) wait=$OPTARG; shift;;
+        h) usage;;
     esac
 done
 # non-flagged arg is IP/host
 [ -n "$1" ] && IP=$1
 
 if [ "$cmd" = "downyet" ]; then
-    if [ -n "$count" ]; then
-	/bin/ping -W 2 -i $interval -c $count $IP
-    else
-	/bin/ping -W 2 -i $interval $IP
-	exec /usr/bin/play ~/.themes/sounds/thunder.wav;
-    fi
+    /bin/ping -W $timeout -i $interval $IP
+    exec /usr/bin/play ~/.themes/sounds/thunder.wav;
 else
     if [ -n "$ping" ] ; then
-	if [ -n "$count" ]; then
-	    echo /bin/ping -i $interval -c $count $IP
-	    /bin/ping -i $interval -c $count $IP
-	else
-	    /bin/ping -i $interval $IP
-	fi
+        if [ -n "$count" ]; then
+            echo /bin/ping -i $interval -c $count $IP
+            /bin/ping -i $interval -c $count $IP
+        else
+            /bin/ping -i $interval $IP
+        fi
     else
-	date;
-	until /bin/ping -i $interval -q -c $count $IP; do
-	    sleep 5;
-	    date;
-	done
-	exec /usr/bin/play ~/.themes/sounds/itsawak2.wav;
+        date;
+        until /bin/ping -i $interval -q -c $count $IP; do
+            sleep 5;
+            date;
+        done
+        exec /usr/bin/play ~/.themes/sounds/itsawak2.wav;
     fi
 fi
 
 #/usr/bin/aplay /usr/local/share/sounds/hamster.au;
-
+## vim: expandtab
