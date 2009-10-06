@@ -32,6 +32,13 @@ mkdir $tmpdir
 cd $tmpdir
 file_info=`munpack -q -t -C $tmpdir $mbox`
 
+trap 'cleanup' 0
+cleanup () {
+    sleep 3
+    rm -f $files $mbox
+    rmdir $tmpdir
+}
+
 if [ "$file_info" = "Did not find anything to unpack from $mbox" ]; then
     cat $mbox | formail -x content-type: | grep -q text/html
     if [ $? -eq 0 ]; then
@@ -97,7 +104,7 @@ else
     exit 1
 fi
 
-(x-www-browser $tmpdir/$html_file; sleep 3; rm $files $mbox; rmdir $tmpdir) &
-#(x-www-browser $tmpdir/$html_file; sleep 3; rm $files; rmdir $tmpdir) &
+x-www-browser $tmpdir/$html_file &
+#(x-www-browser $tmpdir/$html_file; sleep 3; rm $files $mbox; rmdir $tmpdir) &
 
 ## vim: ft=sh
