@@ -10,7 +10,7 @@
 #
 #IP=68.180.206.184 # yahoo
 IP=69.147.114.224 # yahoo
-AIP=74.125.67.100 # google
+AIP=74.125.45.100 # google
 GIP=68.118.117.233
 ping=
 count=1
