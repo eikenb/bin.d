@@ -51,7 +51,7 @@ if [ "$cmd" = "downyet" ]; then
     #/bin/ping -W $timeout -i $interval $IP
     date;
     until ! /bin/ping -w $timeout -c $count $IP; do
-        sleep 2
+        sleep 1
         date;
     done
     exec /usr/bin/play ~/.themes/sounds/thunder.wav;
