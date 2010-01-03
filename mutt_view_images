@@ -25,6 +25,6 @@ mkdir $tmpdir
 cd $tmpdir
 files=`munpack -q -t -C $tmpdir $mbox | sed 's/([^()]\+)//g'`
 
-gqview &
+geeqie
 
 ## vim: ft=sh
