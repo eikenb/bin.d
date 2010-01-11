@@ -12,37 +12,42 @@
 IP=69.147.114.224 # yahoo
 AIP=74.125.45.100 # google
 GIP=68.118.117.233
+
 ping=
 count=1
 interval=1
 timeout=1
 cmd=`basename $0`
+[ "$cmd" = "downyet" ] && delay=2 || delay=5
 
 usage () {
     echo "usage: $cmd [options] [IP]"
     echo "-i ping interval"
+    echo "-s sleep delay"
     if [ "$cmd" = "upyet" ]; then
         echo "-p ping"
         echo "-c N count N times"
     else
-        echo '-w response timeout'
+        echo '-t response timeout'
     fi
     echo "-a alternate IP"
     echo "-g ISP gateway"
     exit 0
 }
 
-while getopts aghpi:c:w: arg; do
+while getopts aghpi:c:t:s: arg; do
     case $arg in
         p) ping=true; [ $count -eq 1 ] && count= ; shift;;
         c) count=$OPTARG; shift; shift;;
         i) interval=$OPTARG; shift; shift;;
         a) IP=$AIP; shift;;
         g) IP=$GIP; shift;;
-        w) wait=$OPTARG; shift;;
+        t|w) timeout=$OPTARG; shift; shift;;
+        s|d) delay=$OPTARG; shift; shift;;
         h) usage;;
     esac
 done
+
 # non-flagged arg is IP/host
 [ -n "$1" ] && IP=$1
 
@@ -51,7 +56,7 @@ if [ "$cmd" = "downyet" ]; then
     #/bin/ping -W $timeout -i $interval $IP
     date;
     until ! /bin/ping -w $timeout -c $count $IP; do
-        sleep 1
+        sleep $delay;
         date;
     done
     exec /usr/bin/play ~/.themes/sounds/thunder.wav;
@@ -66,7 +71,7 @@ else
     else
         date;
         until /bin/ping -i $interval -q -c $count $IP; do
-            sleep 5;
+            sleep delay;
             date;
         done
         exec /usr/bin/play ~/.themes/sounds/itsawak2.wav;
