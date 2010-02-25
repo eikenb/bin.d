@@ -13,14 +13,20 @@
 tmpdir=/tmp/mutthtmltmpdir
 mbox=/tmp/tmpbox
 
+trap 'cleanup_on_error' 0
+cleanup_on_error () {
+    if [ "$?" -ne 0 ]; then
+	rm -f $files $mbox
+	rmdir $tmpdir
+    fi
+}
+
 mkdir $tmpdir
 cd $tmpdir
 files=`munpack -q -t -C $tmpdir $mbox | sed 's/([^()]\+)//g'`
 
 (trap 'cleanup' 0
 cleanup () {
-    echo hi
-    sleep 1
     rm -f $files $mbox
     rmdir $tmpdir
 }
