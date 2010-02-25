@@ -16,7 +16,7 @@ GIP=68.118.117.233
 ping=
 count=1
 interval=1
-timeout=1
+timeout=2
 cmd=`basename $0`
 delay=2
 
