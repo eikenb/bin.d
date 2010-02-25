@@ -10,21 +10,20 @@
 #macro  index  <F9>  "<copy-message>/tmp/tmpbox\n<enter><shell-escape>~/bin/mutt-view-images.sh\n" "View images"
 #macro  pager  <F9>  "<copy-message>/tmp/tmpbox\n<enter><shell-escape>~/bin/mutt-view-images.sh\n" "View images"
 
-
 tmpdir=/tmp/mutthtmltmpdir
 mbox=/tmp/tmpbox
-
-trap 'cleanup' 0
-cleanup () {
-    sleep 1
-    rm -f $files $mbox
-    rmdir $tmpdir
-}
 
 mkdir $tmpdir
 cd $tmpdir
 files=`munpack -q -t -C $tmpdir $mbox | sed 's/([^()]\+)//g'`
 
-geeqie
+(trap 'cleanup' 0
+cleanup () {
+    echo hi
+    sleep 1
+    rm -f $files $mbox
+    rmdir $tmpdir
+}
+geeqie) > /dev/null 2>&1 &
 
 ## vim: ft=sh
