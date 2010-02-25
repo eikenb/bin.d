@@ -13,6 +13,7 @@ IP=69.147.114.224 # yahoo
 AIP=74.125.45.100 # google
 GIP=68.118.117.233
 
+flip=
 ping=
 count=1
 interval=1
@@ -29,18 +30,20 @@ usage () {
         echo "-c N count N times"
     else
         echo '-t response timeout'
+        echo '-f flip to upyet when down'
     fi
     echo "-a alternate IP"
     echo "-g ISP gateway"
     exit 0
 }
 
-while getopts aghpi:c:t:s: arg; do
+while getopts afghpi:c:t:s: arg; do
     case $arg in
         p) ping=true; [ $count -eq 1 ] && count= ; shift;;
         c) count=$OPTARG; shift; shift;;
         i) interval=$OPTARG; shift; shift;;
         a) IP=$AIP; shift;;
+        f) flip=true; shift;;
         g) IP=$GIP; shift;;
         t|w) timeout=$OPTARG; shift; shift;;
         s|d) delay=$OPTARG; shift; shift;;
@@ -51,6 +54,9 @@ done
 # non-flagged arg is IP/host
 [ -n "$1" ] && IP=$1
 
+HL="\033[0;31m"
+RST="\033[0m"
+
 if [ "$cmd" = "downyet" ]; then
     # try this sometime. curious if -W works.
     #/bin/ping -W $timeout -i $interval $IP
@@ -59,7 +65,13 @@ if [ "$cmd" = "downyet" ]; then
         sleep $delay;
         date;
     done
-    exec /usr/bin/play ~/.themes/sounds/thunder.wav;
+    if [ -n "$flip" ]; then
+        /usr/bin/play -q ~/.themes/sounds/thunder.wav &
+        echo "${HL}-------------------- DOWN --------------------${RST}"
+        exec upyet;
+    else
+        exec /usr/bin/play -q ~/.themes/sounds/thunder.wav;
+    fi
 else
     if [ -n "$ping" ] ; then
         if [ -n "$count" ]; then
@@ -74,7 +86,7 @@ else
             sleep $delay;
             date;
         done
-        exec /usr/bin/play ~/.themes/sounds/itsawak2.wav;
+        exec /usr/bin/play -q ~/.themes/sounds/itsawak2.wav;
     fi
 fi
 
