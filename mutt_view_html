@@ -34,9 +34,9 @@ file_info=`munpack -q -t -C $tmpdir $mbox`
 
 trap 'cleanup' 0
 cleanup () {
-    sleep 3
+    [ $? -eq 0 ] && sleep 2 # give browser a chance to run
     rm -f $files $mbox
-    rmdir $tmpdir
+    [ -d $tmpdir ] && rmdir $tmpdir
 }
 
 if [ "$file_info" = "Did not find anything to unpack from $mbox" ]; then
@@ -53,7 +53,6 @@ if [ $? -ne 0 ]; then
     echo "No html found!"
     rmdir $tmpdir
     rm $mbox
-    sleep 2
     exit 1
 fi
 
