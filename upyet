@@ -61,7 +61,7 @@ if [ "$cmd" = "downyet" ]; then
     # try this sometime. curious if -W works.
     #/bin/ping -W $timeout -i $interval $IP
     date;
-    until ! /bin/ping -w $timeout -c $count $IP; do
+    until ! /bin/ping -W $timeout -c $count $IP; do
         sleep $delay;
         date;
     done
