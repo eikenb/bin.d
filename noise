@@ -1,5 +1,5 @@
 #!/bin/sh
 
-#/usr/bin/play /usr/local/share/sounds/thunder.wav
-exec /usr/bin/play ~/.themes/Sounds/thunder.wav > /dev/null 2>&1
+[ -n "$1" ] && sound="$@" || sound=~/.themes/Sounds/thunder.wav
+exec /usr/bin/play $sound > /dev/null 2>&1
 
