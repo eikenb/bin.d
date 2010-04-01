@@ -5,13 +5,14 @@
 # kavi - 66.179.20.222
 # google - 64.233.187.99
 # isp nameserver - 
-#   primary 209.225.8.42
-#   secondary 24.240.141.241 - filtered, don't use
+#   primary 24.197.160.17
+#   secondary 24.197.160.18
 #
 #IP=68.180.206.184 # yahoo
-IP=69.147.114.224 # yahoo
-AIP=74.125.45.100 # google
+IP=69.147.122.70 # yahoo
+AIP=74.125.65.104 # google
 GIP=68.118.117.233
+VPSIP=68.68.99.138
 
 flip=
 ping=
@@ -34,15 +35,17 @@ usage () {
     fi
     echo "-a alternate IP"
     echo "-g ISP gateway"
+    echo "-v my vps at prgmr.com"
     exit 0
 }
 
-while getopts afghpi:c:t:s: arg; do
+while getopts avfghpi:c:t:s: arg; do
     case $arg in
         p) ping=true; [ $count -eq 1 ] && count= ; shift;;
         c) count=$OPTARG; shift; shift;;
         i) interval=$OPTARG; shift; shift;;
         a) IP=$AIP; shift;;
+        v) IP=$VPSIP; shift;;
         f) flip=true; shift;;
         g) IP=$GIP; shift;;
         t|w) timeout=$OPTARG; shift; shift;;
