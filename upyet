@@ -57,20 +57,32 @@ done
 # non-flagged arg is IP/host
 [ -n "$1" ] && IP=$1
 
-HL="\033[0;31m"
+ERR="\033[0;31m"
+HIT="\033[1;32m"
 RST="\033[0m"
 
 if [ "$cmd" = "downyet" ]; then
     # try this sometime. curious if -W works.
     #/bin/ping -W $timeout -i $interval $IP
     date;
-    until ! /bin/ping -W $timeout -c $count $IP; do
+    miss=0
+    until [ $miss -ge 2 ]; do
+        if ! /bin/ping -q -W $timeout -c $count $IP > /dev/null; then
+            miss=$(($miss + 1))
+            echo "${ERR}"`date`"${RST}";
+        else
+            miss=0
+            echo "${HIT}"`date`"${RST}";
+        fi
         sleep $delay;
-        date;
     done
+#    until ! /bin/ping -W $timeout -c $count $IP; do
+#        sleep $delay;
+#        date;
+#    done
     if [ -n "$flip" ]; then
         /usr/bin/play -q ~/.themes/sounds/thunder.wav &
-        echo "${HL}-------------------- DOWN --------------------${RST}"
+        echo "${ERR}-------------------- DOWN --------------------${RST}"
         exec upyet;
     else
         exec /usr/bin/play -q ~/.themes/sounds/thunder.wav;
