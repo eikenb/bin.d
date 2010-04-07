@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Author: John Eikenberry <jae@zhar.net>
+# License: GPL 3.0 <http://www.gnu.org/licenses/gpl.txt>
+
 # (27.08.07) Fixed problem detecting html from munpack info
 # (01.10.07) Didn't remove tmp files on error condition.
 # (09.10.07) Replaced 'dc' subshell with shell arithmetic

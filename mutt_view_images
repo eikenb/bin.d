@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Author: John Eikenberry <jae@zhar.net>
+# License: GPL 3.0 <http://www.gnu.org/licenses/gpl.txt>
+
 # Unpacks all attached files and kicks off an image view on the directory (in
 # this case gqview which I like). Cleans up the images/directory afterwards.
 #
