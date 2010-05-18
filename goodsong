@@ -17,27 +17,17 @@ usage() {
 usage: $program [option]
 
   options:
-
-        -p, --play        play a random song from list, now
-
+        -h, --help        display this
         -b, --build       build a playlist from your list, play it
-
-        -s, --show        display a random song from list
-
         -f, --find regex  find a song in your list using grep 'regex'
-
+        -p, --play        play a random song from list, now
+        -P, --print       print your list with music dir prepended
+        -s, --show        display a random song from list
         -S, --smart       select a song from your list; find it in
                           your current playlist or add it; when the
                           current song ends, play it
-
-        -P, --print       print your list with music dir prepended
-
-        -h, --help        display this
-
         none              append playing song to list
-
 EOF
-
   exit 1
 }
 
