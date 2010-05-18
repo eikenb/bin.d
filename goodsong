@@ -86,7 +86,8 @@ get_one() {
 
 # returns current seconds remaining
 get_lag() {
-  local time curm curs totm tots lag N
+  local time lag N;
+  # don't need to list vars in while block as they are in subshell
 
   time="$(mpc | awk '/playing/ {print $3}')"
   if [ -n "$time" ]; then
