@@ -20,6 +20,7 @@ usage: $program [option]
         -h, --help        display this
         -b, --build       build a playlist from your list, play it
         -f, --find regex  find a song in your list using grep 'regex'
+        -l, --list name   use 'name' for list instead of '$program'
         -p, --play        play a random song from list, now
         -P, --print       print your list with music dir prepended
         -s, --show        display a random song from list
@@ -146,20 +147,42 @@ play_one() { mpc play $(get_one); }
 # search the list
 search_list() { grep -i "$*" "$list"; }
 
-parse_options() {
-  case "$1" in
-    -h|--help)  message                 ;;
-    -s|--show)  show_one                ;;
-    -f|--find)  shift; search_list "$*" ;;
-    -p|--play)  play_one                ;;
-    -b|--build) build_playlist          ;;
-    -S|--smart) smart_play              ;;
-    -P|--print) printlist               ;;
-    *)          add_to_list             ;;
-  esac
+set_list_name () {
+  # write global list
+  list="$(mpdParam '^playlist_directory')/$1.m3u"
 }
 
-list="$(mpdParam '^playlist_directory')/goodsongs.m3u"
-touch "$list"
+create_list () {
+  [ -e "$list" ] || touch "$list"
+}
 
-parse_options "$@"
+run() {
+  # list defaults to same as program name
+  set_list_name "$(basename $0)"
+
+  # process help or override list name
+  for arg ; do
+    case "$arg" in
+      -h|--help)  usage                         ;;
+      -l|--list)  shift; set_list_name "$1"; shift  ;;
+    esac
+  done
+
+  create_list # create list file
+
+  for arg ; do
+    case "$arg" in
+      -b|--build) build_playlist                ;;
+      -f|--find)  shift; search_list "$*"       ;;
+      -p|--play)  play_one                      ;;
+      -P|--print) printlist                     ;;
+      -s|--show)  show_one                      ;;
+      -S|--smart) smart_play                    ;;
+      *)          add_to_list                   ;;
+    esac
+  done
+}
+
+run "$@"
+
+# vim: shiftwidth=2 expandtab
