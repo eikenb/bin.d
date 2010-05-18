@@ -1,23 +1,20 @@
-#!/bin/bash
+#!/bin/sh
 #
-# goodsong v2.1
+# goodsong v2.2
 #
-# pbrisbin 2009, 2010
+# Copyright (C) 2010 John Eikenberry <jae@zhar.net>
 #
-# http://pbrisbin.com:8080/bin/goodsong
-#
-# 5/9/2010 patched by TomVincent to add:
-#
-#  * use of heredoc in message
-#  * locateMPDConf()
-#  * mpdParam()
-#  * default list as an actual playlist
-#  
+# Originally based on goodsong from: http://pbrisbin.com:8080/bin/goodsong
+#  by pbrisbin 2009, 2010
+#  with patches by TomVincent
 ###
 
-message() {
+program=$(basename $0)
+set -e -u
+
+usage() {
   cat << EOF
-usage: goodsong [option]
+usage: $program [option]
 
   options:
 
@@ -48,17 +45,15 @@ EOF
 # Return the mpd.conf passed as a parameter to mpd or an expected default
 locateMPDConf() {
   # Don't use any command that overrides the "real" mpd binary
-  local config="$(pgrep -fl $(which --skip-tilde mpd) | awk '{print $3}')"
+  local config
 
-  if [[ -z $config ]]; then
-    if [[ -f "$HOME/.mpd/mpd.conf" ]]; then
-      config="$HOME/.mpd/mpd.conf"
-    elif [[ -f '/etc/mpd.conf' ]]; then
-      config='/etc/mpd.conf'
-    else
-      echo 'unable to determine mpd.conf location' >&2
-      exit 1
-    fi
+  if [ -f "$HOME/.mpd/mpd.conf" ]; then
+    config="$HOME/.mpd/mpd.conf"
+  elif [ -f '/etc/mpd.conf' ]; then
+    config='/etc/mpd.conf'
+  else
+    echo 'unable to determine mpd.conf location' >&2
+    exit 1
   fi
 
   echo "$config"
@@ -67,16 +62,15 @@ locateMPDConf() {
 # tvincent 5/9/2010 +
 # From the given regex ($1), find the relevant mpd.conf parameter
 mpdParam() {
-  if [[ -z "$1" ]]; then
+  if [ -z "$1" ]; then
     echo 'mpdParam called with no argument' >&2
     exit 1
   fi
 
   local mpdconf="$(locateMPDConf)" param
 
-  param="$(awk "/$1/"'{print $2}' "$mpdconf")" # find param
-  param="${param//\"/}"                        # strip quotes
-  param="${param/\~/$HOME}"                    # translate ~
+  param="$(awk "/$1/"'{print $2}' "$mpdconf" | tr -d \")" # find param
+  param=$HOME/${param#\~/}                                # translate ~
 
   echo "$param"
 }
@@ -94,7 +88,7 @@ get_pos() {
   #pos=$(mpc --format '%position% %file%' playlist | grep "[0-9]*\ $track$" | awk '{print $1}' | head -n 1)
   pos=$(mpc --format '%position% %file%' playlist | awk "/[0-9]* ${track//\//\\/}$/"'{print $1}' | head -n 1)
 
-  if [[ -z "$pos" ]]; then
+  if [ -z "$pos" ]; then
     mpc add "$track"
     pos=$(mpc playlist | wc -l)
   fi
@@ -107,18 +101,20 @@ get_lag() {
   local time curm curs totm tots lag N
 
   time="$(mpc | awk '/playing/ {print $3}')"
+  if [ -n "$time" ]; then
+    lag=$(echo $time \
+        | sed 's/\//:/' \
+        | while IFS=':' read -r curm curs totm tots; do
+            cur=$((curm*60+curs))
+            tot=$((totm*60+tots))
 
-  if [[ -n "$time" ]]; then
-    while IFS=':' read -r curm curs totm tots; do
-      cur=$((curm*60+curs))
-      tot=$((totm*60+tots))
-
-      lag=$((tot-cur))
-    done <<< "${time////:}"
+            lag=$((tot-cur))
+            echo $lag
+          done)
 
     # adjust lag based on crossfade
     N=$(mpc crossfade | awk '{print $2}')
-    [[ -n "$N" ]] && lag=$((lag-N))
+    [ -n "$N" ] && lag=$((lag-N))
 
     echo "$lag"
   else
@@ -131,9 +127,9 @@ build_playlist() {
   local IFS=$'\n'
 
   mpc clear >/dev/null
-  while read -r; do
+  sort -R "$list" | while read -r; do
     mpc add "$REPLY"
-  done < <(sort -R "$list")
+  done
   mpc play
 }
 
