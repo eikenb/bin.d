@@ -170,6 +170,8 @@ run() {
 
   create_list # create list file
 
+  [ -z "$@" ] && add_to_list && exit
+
   for arg ; do
     case "$arg" in
       -b|--build) build_playlist                ;;
@@ -178,7 +180,6 @@ run() {
       -P|--print) printlist                     ;;
       -s|--show)  show_one                      ;;
       -S|--smart) smart_play                    ;;
-      *)          add_to_list                   ;;
     esac
   done
 }
