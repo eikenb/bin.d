@@ -7,11 +7,13 @@
 #
 # Cleans up tmp training mboxes. 
 
-ham_files=(agents aiexpert comm domain drdobbsjournal games ham howto inbox jokes kavi knoll lists mercury-users nvidia openbox pygame pypy python python-logic root zmysqlda zsh work/inbox work/tips work/ham)
+ham_files=(agents comm domain drdobbsjournal family/knoll family/srobin facebook friends games ham howto inbox jobhunt list-info mlists nvidia openbox pypy python root rxvt-unicode srobin starship zmysqlda zsh work/inbox work/tips work/kavi)
+
 ham=()
 for hf in $ham_files; do
     ham+=(~/Mail/$hf)
 done
+
 for file in ~/Mail/sentmail/*(.); do
     ham+=($file)
 done
@@ -26,7 +28,13 @@ rm -f $hamfile
 rm -f $spamfile
 
 for file in $ham; do
-    cat $file >> $hamfile
+    if [ -d "$file" ]; then
+	find "$file" -type f | while read f; do
+	    cat $f | formail >> $hamfile
+	done
+    else
+	cat $file >> $hamfile
+    fi
 done
 
 for file in $spam; do
@@ -34,8 +42,10 @@ for file in $spam; do
 done
 
 bogotrain=~/bin/bogominitrain.py
-echo "perl $bogotrain -fnv -b '-o 0.95,0.35' $hamfile $spamfile"
-perl $bogotrain -fnv -b '-o 0.95,0.35' $hamfile $spamfile
+#echo "perl $bogotrain -fnv -b '-o 0.95,0.35' $hamfile $spamfile"
+#perl $bogotrain -fnv -b '-o 0.95,0.35' $hamfile $spamfile
+echo "$bogotrain -fnv -b '-o 0.95,0.35' $hamfile $spamfile"
+$bogotrain -fnv -b '-o 0.95,0.35' $hamfile $spamfile
 echo 'done. removing tmp files'
 rm $hamfile
 rm $spamfile
