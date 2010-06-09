@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# run bogofilter training in the background as it is to slow
+# to run directly
+
+tmpdir="/tmp/mutt-spam"
+tmpfile=`tempfile -d $tmpdir`
+
+# mail should be coming in on stdin, stick it in a file
+cat > $tmpfile
+
+# now run bogofilter and the cleanup in the background
+(trap 'cleanup' 0
+cleanup () {
+    rm -f $tmpfile
+}
+cat $tmpfile | bogofilter $@ ) &
+
