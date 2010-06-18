@@ -133,6 +133,11 @@ add_to_list() {
 
   # add it -- prevent dupes
   grep -Fqx "$song" "$list" || echo "$song" >> "$list"
+
+  # notify user of event if possible
+  msg="`basename $song` added to `basename $list`"
+  ([ -t 0 -a -t 1 ] && echo "$msg") \
+    || ( type notify-send > /dev/null && notify-send "$msg")
 }
 
 # queue up a good song for when the current song ends
