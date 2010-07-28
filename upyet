@@ -19,12 +19,13 @@ VPSIP=68.68.99.138 # draal
 ISP=24.197.160.17 # isp nameserver
 
 flip=
-ping=
+simpleping=
 count=1
 interval=1
 timeout=2
 cmd=`basename $0`
 delay=1
+adapt=
 
 ARGS="$@"
 usage () {
@@ -34,6 +35,7 @@ usage () {
     if [ "$cmd" = "upyet" ]; then
         echo "-p ping"
         echo "-c N count N times"
+        echo "-A use Adaptive ping"
     else
         echo '-t response timeout'
         echo '-f flip to upyet when down'
@@ -45,9 +47,10 @@ usage () {
     exit 0
 }
 
-while getopts anvfghpi:c:t:s: arg; do
+while getopts aAnvfghpi:c:t:s: arg; do
     case $arg in
-        p) ping=true; [ $count -eq 1 ] && count= ; shift;;
+        A) adapt=true; shift;;
+        p) simpleping=true; [ $count -eq 1 ] && count= ; shift;;
         c) count=$OPTARG; shift; shift;;
         i) interval=$OPTARG; shift; shift;;
         a) IP=$AIP; shift;;
@@ -74,16 +77,16 @@ report () {
     [ "$1" = "exit" ] && exit
 }
 
+ping='/bin/ping'
+
 if [ "$cmd" = "downyet" ]; then
     trap 'report exit' 0 2
-    # try this sometime. curious if -W works.
-    #/bin/ping -W $timeout -i $interval $IP
     miss=0
     total=0
     totalmiss=0
     until [ $miss -ge 2 ]; do
         total=$(($total + 1))
-        if ! /bin/ping -q -W $timeout -c $count $IP > /dev/null; then
+        if ! $ping -q -W $timeout -c $count $IP > /dev/null; then
             miss=$(($miss + 1))
             totalmiss=$(($totalmiss + 1))
             echo "${ERR}"`date`"${RST}";
@@ -104,16 +107,19 @@ if [ "$cmd" = "downyet" ]; then
         exec /usr/bin/play -q ~/.themes/sounds/thunder.wav
     fi
 else
-    if [ -n "$ping" ] ; then
+    ping="$ping -i $interval"
+    [ "$adapt" = "true" ] && ping="$ping -A"
+
+    if [ -n "$simpleping" ] ; then
         if [ -n "$count" ]; then
-            echo /bin/ping -i $interval -c $count $IP
-            /bin/ping -i $interval -c $count $IP
+            echo $ping -c $count $IP
+            $ping -c $count $IP
         else
-            /bin/ping -i $interval $IP
+            $ping $IP
         fi
     else
         date;
-        until /bin/ping -i $interval -q -c $count $IP; do
+        until $ping -q -c $count $IP; do
             sleep $delay;
             date;
         done
