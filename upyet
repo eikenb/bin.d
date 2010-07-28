@@ -26,6 +26,7 @@ timeout=2
 cmd=`basename $0`
 delay=1
 
+ARGS="$@"
 usage () {
     echo "usage: $cmd [options] [IP]"
     echo "-i ping interval"
@@ -67,14 +68,24 @@ ERR="\033[0;31m"
 HIT="\033[1;32m"
 RST="\033[0m"
 
+report () {
+    echo "$cmd:\tpings:\t$total\tmisses:$totalmiss"
+    trap '' 0
+    [ "$1" = "exit" ] && exit
+}
+
 if [ "$cmd" = "downyet" ]; then
+    trap 'report exit' 0 2
     # try this sometime. curious if -W works.
     #/bin/ping -W $timeout -i $interval $IP
-    date;
     miss=0
+    total=0
+    totalmiss=0
     until [ $miss -ge 2 ]; do
+        total=$(($total + 1))
         if ! /bin/ping -q -W $timeout -c $count $IP > /dev/null; then
             miss=$(($miss + 1))
+            totalmiss=$(($totalmiss + 1))
             echo "${ERR}"`date`"${RST}";
         else
             miss=0
@@ -82,16 +93,15 @@ if [ "$cmd" = "downyet" ]; then
         fi
         sleep $delay;
     done
-#    until ! /bin/ping -W $timeout -c $count $IP; do
-#        sleep $delay;
-#        date;
-#    done
+
     if [ -n "$flip" ]; then
         /usr/bin/play -q ~/.themes/sounds/thunder.wav &
         echo "${ERR}-------------------- DOWN --------------------${RST}"
-        exec upyet;
+        report
+        sleep $delay;
+        exec upyet "$ARGS"
     else
-        exec /usr/bin/play -q ~/.themes/sounds/thunder.wav;
+        exec /usr/bin/play -q ~/.themes/sounds/thunder.wav
     fi
 else
     if [ -n "$ping" ] ; then
@@ -107,7 +117,14 @@ else
             sleep $delay;
             date;
         done
-        exec /usr/bin/play -q ~/.themes/sounds/itsawak2.wav;
+
+        if [ -n "$flip" ]; then
+            /usr/bin/play -q ~/.themes/sounds/itsawak2.wav &
+            echo "${HIT}-------------------- UP --------------------${RST}"
+            exec downyet "$ARGS"
+        else
+            exec /usr/bin/play -q ~/.themes/sounds/itsawak2.wav
+        fi
     fi
 fi
 
