@@ -136,8 +136,8 @@ add_to_list() {
   grep -Fqx "$song" "$list" || echo "$song" >> "$list"
 
   # notify user of event if possible
-  song=`basename $song`
-  li=`basename $list`
+  song=`basename "$song"`
+  li=`basename "$list"`
   ([ -t 0 -a -t 1 ] && echo "$song added to $li") \
     || ( type notify-send > /dev/null && notify-send "$li <- $song")
 }
