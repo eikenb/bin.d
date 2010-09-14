@@ -1,0 +1,42 @@
+#!/bin/sh
+
+# highlights patterns of text
+
+usage () {
+    [ -n "$2" ] && echo "$2"
+    echo -n "COMMAND | `basename $0` [options]"
+    echo "[color num] pattern [[color num] pattern ...]"
+    echo "Options:"
+    echo "\t-s Case sensitive (default case insensitive)"
+    echo "\t-h help"
+    exit $1
+}
+
+# sanity checks
+[ $# -gt 0 ] || usage 1
+[ ! -t 0 ] || usage 1 "Only use as stream filter."
+
+case=I
+while getopts sh? arg; do
+    case $arg in
+       s)    case=; shift;;
+       h|\?) usage 0;;
+    esac
+done
+
+patterns=
+
+if [ $# -eq 1 ]; then
+    color=190
+    patterns="s/\($1\)/[38;5;${color}m\1[0m/$case;"
+else
+    while [ -n "$1" ]; do
+        echo "$1" | grep -q "^[[:digit:]]\+$" || usage 1
+        [ -n "$2" ] || usage 1
+        patterns="$patterns s/\($2\)/[38;5;$1m\1[0m/$case;"
+        shift;shift
+    done
+fi
+
+exec sed -e "$patterns"
+
