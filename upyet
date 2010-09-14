@@ -104,6 +104,7 @@ if [ "$cmd" = "downyet" ]; then
         sleep $delay;
         exec upyet "$ARGS"
     else
+        report
         exec /usr/bin/play -q ~/.themes/sounds/thunder.wav
     fi
 else
