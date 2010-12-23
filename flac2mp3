@@ -2,6 +2,7 @@
 
 while read file; do 
     if [ "${file%.flac}.flac" = "$file" ]; then
-	flac -cd "$file" | lame -h --vbr-new -V 0 - "${file%.flac}.mp3";
+        flac -cd "$file" | \
+            lame -q 2 -V 0 --vbr-new --id3v2-only - "${file%.flac}.mp3";
     fi
 done
