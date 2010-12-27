@@ -1,8 +1,23 @@
 #!/bin/sh
 
-while read file; do 
-    if [ "${file%.flac}.flac" = "$file" ]; then
-        flac -cd "$file" | \
-            lame -q 2 -V 0 --vbr-new --id3v2-only - "${file%.flac}.mp3";
+if [ $# -eq 1 ]; then
+    if [ "${1%.flac}.flac" = "$1" ]; then
+        src="$1"
+        dst="${1%.flac}.mp3"
+        flac -cd "$src" | lame -q 2 -V 0 --vbr-new --id3v2-only - "$dst";
+        eval `metaflac --export-tags-to=- "$src" | sed 's/=\(.*\)/="\1"/'`
+        id3v2 -A "$ALBUM" -y "$DATE" -g "$GENRE" -a "$ARTIST" \
+            -t "$TITLE" -T "$TRACKNUMBER" "$dst"
+    else
+        echo "Input file ($1) was not a .flac."
     fi
-done
+elif [ -t 0 ]; then
+    echo "$@" | "$0"
+else
+    while read file; do
+        if [ "${file%.flac}.flac" = "$file" ]; then
+            "$0" "$file"
+        fi
+    done
+fi
+
