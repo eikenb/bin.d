@@ -7,7 +7,7 @@
 #
 # Cleans up tmp training mboxes. 
 
-ham_files=(agents comm domain drdobbsjournal family/knoll family/srobin facebook friends games ham howto inbox jobhunt list-info mlists nvidia openbox pypy python root rxvt-unicode srobin starship zmysqlda zsh work/inbox work/tips work/kavi)
+ham_files=(agents athens ai comm domain drdobbsjournal facebook family/knoll family/srobin friends games ham howto inbox janrain jobhunt list-info mlists openbox projects pypy python root rxvt-unicode srobin starship zmysqlda zsh)
 
 ham=()
 for hf in $ham_files; do
