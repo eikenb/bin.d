@@ -1,0 +1,24 @@
+#!/bin/sh
+
+if [ $# -eq 1 ]; then
+    if [ "${1%.ogg}.ogg" = "$1" ]; then
+        src="$1"
+        dst="${1%.ogg}.mp3"
+        ogg123 -d wav -f - "$src" \
+            | lame -q 2 -V 0 --vbr-new --id3v2-only - "$dst";
+        eval `lltag -S "$src" | tail -n +2 | sed 's/=\(.*\)/="\1"/'`
+        id3v2 -A "$ALBUM" -y "$DATE" -g "$GENRE" -a "$ARTIST" \
+            -t "$TITLE" -T "$TRACKNUMBER" "$dst"
+    else
+        echo "Input file ($1) was not a .ogg."
+    fi
+elif [ -t 0 ]; then
+    echo "$@" | "$0"
+else
+    while read file; do
+        if [ "${file%.ogg}.ogg" = "$file" ]; then
+            "$0" "$file"
+        fi
+    done
+fi
+
