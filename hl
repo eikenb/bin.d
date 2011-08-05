@@ -28,12 +28,12 @@ patterns=
 
 if [ $# -eq 1 ]; then
     color=190
-    patterns="s/\($1\)/[38;5;${color}m\1[0m/$case;"
+    patterns="s/\($1\)/[38;5;${color}m\1[0m/g$case;"
 else
     while [ -n "$1" ]; do
         echo "$1" | grep -q "^[[:digit:]]\+$" || usage 1
         [ -n "$2" ] || usage 1
-        patterns="$patterns s/\($2\)/[38;5;$1m\1[0m/$case;"
+        patterns="$patterns s/\($2\)/[38;5;$1m\1[0m/g$case;"
         shift;shift
     done
 fi
