@@ -1,0 +1,36 @@
+#!/bin/sh
+
+var_to_upper () {
+    VAR=${1%%=*};
+    VAL=${1#*=}
+    [ "$VAR" = "tracknumber" ] && VAR="NUMBER"
+    echo -n " --tag "
+    echo -n $VAR | tr "a-z" "A-Z" 
+    echo -n =
+    echo -n \"$VAL\"
+}
+
+if [ $# -eq 1 ]; then
+    if [ "${1%.flac}.flac" = "$1" ]; then
+        src="$1"
+        cmd="/usr/bin/lltag --yes --clear"
+        while read v; do
+            cmd=$cmd$(var_to_upper "$v")
+        done << EOF
+$(metaflac --export-tags-to=- "$src")
+EOF
+        echo $cmd \"$src\"
+        eval "$cmd \"$src\""
+    else
+        echo "Input file ($1) was not a .flac."
+    fi
+elif [ -t 0 ]; then
+    echo "$@" | "$0"
+else
+    while read file; do
+        if [ "${file%.flac}.flac" = "$file" ]; then
+            "$0" "$file"
+        fi
+    done
+fi
+
