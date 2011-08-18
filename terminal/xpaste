@@ -1,0 +1,7 @@
+#!/bin/sh
+#
+# Paste to primary X selection from X clipboard
+
+xclip -o -selection clipboard | xclip -selection primary
+
+

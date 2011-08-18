@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ $# -lt 1 ]; then
+    /usr/bin/xtermset -geom 80x35
+else
+    /usr/bin/xtermset -geom 100x40
+fi
+

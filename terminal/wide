@@ -1,0 +1,9 @@
+#!/bin/sh
+
+height=`xwininfo -id $WINDOWID \
+    | grep geometry | awk '{print $2}' \
+    | awk -F- '{print $1}' | awk -Fx '{print $2}'`
+#echo $height
+
+/usr/bin/xtermset -geom 161x$height
+

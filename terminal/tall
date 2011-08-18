@@ -1,0 +1,20 @@
+#!/bin/sh
+
+dimensions=`xwininfo -id $WINDOWID \
+    | grep geometry | awk '{print $2}'`
+dimensions=${dimensions%%[+-]*}
+
+width=${dimensions%x*}
+height=${dimensions#*x}
+
+cmd=`basename $0`
+chg=10
+[ -n "$1" ] && chg="$1"
+if [ $cmd = "short" ] ; then 
+    height=$(( $height-$chg ))
+else
+    height=$(( $height+$chg ))
+fi
+
+/usr/bin/xtermset -geom ${width}x${height}
+
