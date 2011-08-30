@@ -11,12 +11,12 @@
 #   primary 24.197.160.17
 #   secondary 24.197.160.18
 #
-#IP=68.180.206.184 # yahoo
-IP=69.147.122.70 # yahoo
-AIP=74.125.157.147 # google
-GIP=68.118.117.233 # gateway
-VPSIP=68.68.99.138 # draal
-ISP=24.197.160.17 # isp nameserver
+yahoo=209.191.122.70
+google=74.125.224.84
+draal=68.68.99.138 # draal
+#ISP=24.197.160.17 # isp nameserver
+
+IP=$yahoo
 
 flip=
 simpleping=
@@ -40,24 +40,21 @@ usage () {
         echo '-t response timeout'
         echo '-f flip to upyet when down'
     fi
-    echo "-a alternate IP"
-    echo "-g ISP gateway"
-    echo "-v my vps at prgmr.com"
-    echo "-n isp nameserver"
+    echo "default IP is a yahoo IP"
+    echo "-g google IP"
+    echo "-d draal (my vps at prgmr.com)"
     exit 0
 }
 
-while getopts aAnvfghpi:c:t:s: arg; do
+while getopts Aadghpif:c:t:s: arg; do
     case $arg in
         A) adapt=true; shift;;
         p) simpleping=true; [ $count -eq 1 ] && count= ; shift;;
         c) count=$OPTARG; shift; shift;;
         i) interval=$OPTARG; shift; shift;;
-        a) IP=$AIP; shift;;
-        v) IP=$VPSIP; shift;;
-        n) IP=$ISP; shift;;
+        d) IP=$draal; shift;;
         f) flip=true; shift;;
-        g) IP=$GIP; shift;;
+        a|g) IP=$google; shift;;
         t|w) timeout=$OPTARG; shift; shift;;
         s|d) delay=$OPTARG; shift; shift;;
         h) usage;;
