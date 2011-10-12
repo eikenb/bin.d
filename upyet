@@ -27,12 +27,14 @@ timeout=2
 cmd=`basename $0`
 delay=1
 adapt=
+quiet=
 
 ARGS="$@"
 usage () {
     echo "usage: $cmd [options] [IP]"
     echo "-i ping interval"
     echo "-s sleep delay"
+    echo "-q quiet (no sounds)"
     if [ "$cmd" = "upyet" ]; then
         echo "-p ping"
         echo "-c N count N times"
@@ -48,13 +50,14 @@ usage () {
     exit 0
 }
 
-while getopts Aadglhpfi:c:t:s: arg; do
+while getopts Aadglhpfqi:c:t:s: arg; do
     case $arg in
         A) adapt=true; shift;;
         p) simpleping=true; [ $count -eq 1 ] && count= ; shift;;
         c) count=$OPTARG; shift; shift;;
         i) interval=$OPTARG; shift; shift;;
         f) flip=true; shift;;
+        q) quiet=true; shift;;
         d) IP=$draal; shift;;
         l) IP=$level3; shift;;
         a|g) IP=$google; shift;;
@@ -99,14 +102,14 @@ if [ "$cmd" = "downyet" ]; then
     done
 
     if [ -n "$flip" ]; then
-        /usr/bin/play -q ~/.themes/sounds/thunder.wav &
+        [ -n "$quiet" ] || /usr/bin/play -q ~/.themes/sounds/thunder.wav &
         echo "${ERR}-------------------- DOWN --------------------${RST}"
         report
         sleep $delay;
         exec upyet "$ARGS"
     else
         report
-        exec /usr/bin/play -q ~/.themes/sounds/thunder.wav
+        [ -n "$quiet" ] || exec /usr/bin/play -q ~/.themes/sounds/thunder.wav
     fi
 else
     ping="$ping -i $interval"
@@ -127,11 +130,12 @@ else
         done
 
         if [ -n "$flip" ]; then
-            /usr/bin/play -q ~/.themes/sounds/itsawak2.wav &
+            [ -n "$quiet" ] || /usr/bin/play -q ~/.themes/sounds/itsawak2.wav &
             echo "${HIT}-------------------- UP --------------------${RST}"
             exec downyet "$ARGS"
         else
-            exec /usr/bin/play -q ~/.themes/sounds/itsawak2.wav
+            [ -n "$quiet" ] \
+                || exec /usr/bin/play -q ~/.themes/sounds/itsawak2.wav
         fi
     fi
 fi
