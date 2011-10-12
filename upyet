@@ -14,6 +14,7 @@
 yahoo=209.191.122.70
 google=74.125.224.52
 draal=68.68.99.138 # draal
+level3=4.0.0.8
 #ISP=24.197.160.17 # isp nameserver
 
 IP=$yahoo
@@ -42,18 +43,20 @@ usage () {
     fi
     echo "default IP is a yahoo IP"
     echo "-g google IP"
+    echo "-l Level3 IP"
     echo "-d draal (my vps at prgmr.com)"
     exit 0
 }
 
-while getopts Aadghpfi:c:t:s: arg; do
+while getopts Aadglhpfi:c:t:s: arg; do
     case $arg in
         A) adapt=true; shift;;
         p) simpleping=true; [ $count -eq 1 ] && count= ; shift;;
         c) count=$OPTARG; shift; shift;;
         i) interval=$OPTARG; shift; shift;;
-        d) IP=$draal; shift;;
         f) flip=true; shift;;
+        d) IP=$draal; shift;;
+        l) IP=$level3; shift;;
         a|g) IP=$google; shift;;
         t|w) timeout=$OPTARG; shift; shift;;
         s|d) delay=$OPTARG; shift; shift;;
