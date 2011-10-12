@@ -84,15 +84,16 @@ if [ "$cmd" = "downyet" ]; then
     miss=0
     total=0
     totalmiss=0
-    until [ $miss -ge 2 ]; do
+    until [ $miss -ge 3 ]; do
         total=$(($total + 1))
-        if ! $ping -q -W $timeout -c $count $IP > /dev/null; then
+        if ! out=$($ping -W $timeout -c $count $IP); then
             miss=$(($miss + 1))
             totalmiss=$(($totalmiss + 1))
             echo "${ERR}"`date`"${RST}";
         else
             miss=0
-            echo "${HIT}"`date`"${RST}";
+            echo -n "${HIT}"`date`"${RST}  --  ";
+            echo -n "$out" | grep -o "time=[0-9.]\+"
         fi
         sleep $delay;
     done
