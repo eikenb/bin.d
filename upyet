@@ -106,7 +106,7 @@ if [ "$cmd" = "downyet" ]; then
         echo "${ERR}-------------------- DOWN --------------------${RST}"
         report
         sleep $delay;
-        exec upyet "$ARGS"
+        exec upyet $ARGS
     else
         report
         [ -n "$quiet" ] || exec /usr/bin/play -q ~/.themes/sounds/thunder.wav
@@ -132,7 +132,7 @@ else
         if [ -n "$flip" ]; then
             [ -n "$quiet" ] || /usr/bin/play -q ~/.themes/sounds/itsawak2.wav &
             echo "${HIT}-------------------- UP --------------------${RST}"
-            exec downyet "$ARGS"
+            exec downyet $ARGS
         else
             [ -n "$quiet" ] \
                 || exec /usr/bin/play -q ~/.themes/sounds/itsawak2.wav
