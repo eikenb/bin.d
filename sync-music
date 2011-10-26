@@ -1,0 +1,34 @@
+#!/bin/zsh
+
+usage () {
+    echo "Usage: `basename $0` COMMAND [options]"
+    echo "COMMANDs:"
+    echo "usb - sync all music to usb drive (/media/data)"
+    echo "hd  - sync goodlist playlist songs to local drive."
+}
+
+case "$1" in
+    usb)
+        echo "Verify mount:"
+        mount | grep media
+        echo Press Enter to continue Ctrl-C to abort.; read ignore
+        rsync -vaiz --progress --size-only \
+            /share/public/music/{artists,mixed,jazz} /media/data/music/
+        ;;
+    hd)
+        rsync -viz --size-only --progress \
+            --files-from ~/.mpd/playlists/goodsongs.m3u \
+            /share/public/music /home/jae/Shelf/music
+        ;;
+    player)
+        MOUNT=/media/data/sdb
+        rsync -viz --progress --size-only \
+            --files-from ${HOME}/.mpd/playlists/goodsongs.m3u \
+            /share/public/music $MOUNT/MUSIC/playlist/
+        cp ${HOME}/.mpd/playlists/goodsongs.m3u $MOUNT/MUSIC/playlist/
+        sed -i 's/\//\\/g' $MOUNT/MUSIC/playlist/goodsongs.m3u 2> /dev/null
+        ;;
+    *) usage ;;
+esac
+
+
