@@ -5,7 +5,9 @@ var_to_upper () {
     VAL=${1#*=}
     [ "$VAR" = "tracknumber" ] && VAR="NUMBER"
     echo -n " --tag "
-    echo -n $VAR | tr "a-z" "A-Z" 
+    echo -n \"
+    echo -n $VAR | tr "a-z" "A-Z"
+    echo -n \"
     echo -n =
     echo -n \"$VAL\"
 }
@@ -21,6 +23,8 @@ $(metaflac --export-tags-to=- "$src")
 EOF
         echo $cmd \"$src\"
         eval "$cmd \"$src\""
+        # XXX
+        lltag --yes --no-tagging --rename-sep _ --rename '%n.%t' "$src"
     else
         echo "Input file ($1) was not a .flac."
     fi
@@ -32,5 +36,8 @@ else
             "$0" "$file"
         fi
     done
+    # XXX
+    echo '\nAdding replay gain tags'
+    metaflac --add-replay-gain *.flac
 fi
 
