@@ -39,5 +39,6 @@ else
     # XXX
     echo '\nAdding replay gain tags'
     metaflac --add-replay-gain *.flac
+    rm -f *.m3u
 fi
 
