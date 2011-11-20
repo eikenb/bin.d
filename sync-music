@@ -3,9 +3,14 @@
 usage () {
     echo "Usage: `basename $0` COMMAND [options]"
     echo "COMMANDs:"
-    echo "usb - sync all music to usb drive (/media/data)"
-    echo "hd  - sync goodlist playlist songs to local drive."
+    echo "usb    - sync all music to usb drive (/media/data)"
+    echo "hd     - sync goodlist playlist songs to local drive."
+    echo "player - sync goodlist playlist songs to Sansa."
 }
+
+echo "Verify NFS mount:"
+mount | grep nfs
+echo Press Enter to continue Ctrl-C to abort.; read ignore
 
 case "$1" in
     usb)
@@ -22,6 +27,9 @@ case "$1" in
         ;;
     player)
         MOUNT=/media/data/sdb
+        echo "Verify mount:"
+        mount | grep "$MOUNT"
+        echo Press Enter to continue Ctrl-C to abort.; read ignore
         rsync -viz --progress --size-only \
             --files-from ${HOME}/.mpd/playlists/goodsongs.m3u \
             /share/public/music $MOUNT/MUSIC/playlist/
