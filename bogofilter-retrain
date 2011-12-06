@@ -3,11 +3,11 @@
 # Automates retraining of bogofilter.
 #
 # Appends together ham/spam into 2 mboxes and feeds those to training program
-# (bogominitrain.pl at the moment). 
+# (bogominitrain.pl at the moment).
 #
-# Cleans up tmp training mboxes. 
+# Cleans up tmp training mboxes.
 
-ham_files=(agents athens ai comm domain drdobbsjournal facebook family/knoll family/srobin friends games ham howto inbox janrain jobhunt list-info mlists openbox projects pypy python root rxvt-unicode srobin starship zmysqlda zsh)
+ham_files=(agents ai archive athens comm domain drdobbsjournal facebook family/knoll family/srobin friends games ham howto inbox janrain jobhunt list-info mlists openbox projects pypy python root rxvt-unicode sjf srobin starship vps zmysqlda zsh)
 
 ham=()
 for hf in $ham_files; do
