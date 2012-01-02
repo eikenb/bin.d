@@ -24,6 +24,7 @@ EOF
         echo $cmd \"$src\"
         eval "$cmd \"$src\""
         # XXX
+        #lltag --yes --no-tagging --rename-sep _ --rename '%n.%a.%t' "$src"
         lltag --yes --no-tagging --rename-sep _ --rename '%n.%t' "$src"
     else
         echo "Input file ($1) was not a .flac."
