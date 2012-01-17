@@ -8,6 +8,26 @@ usage () {
     echo "player - sync goodlist playlist songs to Sansa."
 }
 
+# take all current songs in playlist, hardlink to a tmp dir and swap dirs
+rm_old () {
+    src=$1
+    [ -d "$src" ] || { echo "Missing source directory"; usage; exit 1; }
+
+    tmpdir="$src/.tmp"
+    mkdir $tmpdir
+
+    (
+        cd $src
+        cat ~/.mpd/playlists/goodsongs.m3u | while read f ; do
+            cp --link --parent "$f" $tmpdir/
+        done
+    )
+
+    rm -rf $src/artists mixed
+    mv $tmpdir/* $src
+    rmdir $tmpdir
+}
+
 case "$1" in
     usb)
         echo "Verify mount:"
@@ -23,6 +43,7 @@ case "$1" in
         rsync -viz --size-only --progress \
             --files-from ~/.mpd/playlists/goodsongs.m3u \
             /share/public/music /home/jae/Shelf/music
+        rm_old /home/jae/Shelf/music
         ;;
     player)
         MOUNT=/media/data/sdb
