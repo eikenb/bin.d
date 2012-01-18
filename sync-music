@@ -14,7 +14,7 @@ rm_old () {
     [ -d "$src" ] || { echo "Missing source directory"; usage; exit 1; }
 
     tmpdir="$src/.tmp"
-    mkdir $tmpdir
+    mkdir -p $tmpdir
 
     (
         cd $src
@@ -23,7 +23,7 @@ rm_old () {
         done
     )
 
-    rm -rf $src/artists mixed
+    rm -rf $src/artists $src/mixed
     mv $tmpdir/* $src
     rmdir $tmpdir
 }

@@ -35,13 +35,13 @@ usage () {
     echo "-i ping interval"
     echo "-s sleep delay"
     echo "-q quiet (no sounds)"
+    echo '-f flip to upyet when down'
     if [ "$cmd" = "upyet" ]; then
         echo "-p ping"
         echo "-c N count N times"
         echo "-A use Adaptive ping"
     else
         echo '-t response timeout'
-        echo '-f flip to upyet when down'
     fi
     echo "default IP is a yahoo IP"
     echo "-g google IP"
