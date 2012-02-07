@@ -19,12 +19,12 @@ rm_old () {
     (
         cd $src
         cat ~/.mpd/playlists/goodsongs.m3u | while read f ; do
-            cp --link --parent "$f" $tmpdir/
+            cp --link --parent "$f" "$tmpdir/"
         done
     )
 
     rm -rf $src/artists $src/mixed
-    mv $tmpdir/* $src
+    mv "$tmpdir/*" $src
     rmdir $tmpdir
 }
 
@@ -38,12 +38,12 @@ case "$1" in
         ;;
     hd)
         echo "Verify NFS mount:"
-        mount | grep nfs
+        mount | grep "^nfs"
         echo Press Enter to continue Ctrl-C to abort.; read ignore
         rsync -viz --size-only --progress \
             --files-from ~/.mpd/playlists/goodsongs.m3u \
             /share/public/music /home/jae/Shelf/music
-        rm_old /home/jae/Shelf/music
+        #rm_old /home/jae/Shelf/music
         ;;
     player)
         MOUNT=/media/data/sdb
