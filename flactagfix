@@ -23,7 +23,7 @@ $(metaflac --export-tags-to=- "$src")
 EOF
         echo $cmd \"$src\"
         eval "$cmd \"$src\""
-        # XXX
+        # XXX use change this line for multi-artist compilations
         #lltag --yes --no-tagging --rename-sep _ --rename '%n.%a.%t' "$src"
         lltag --yes --no-tagging --rename-sep _ --rename '%n.%t' "$src"
     else
@@ -37,7 +37,7 @@ else
             "$0" "$file"
         fi
     done
-    # XXX
+
     echo '\nAdding replay gain tags'
     metaflac --add-replay-gain *.flac
     rm -f *.m3u
