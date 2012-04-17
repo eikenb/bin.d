@@ -123,15 +123,14 @@ else
             $ping $IP
         fi
     else
-        date;
-        until $ping -q -c $count $IP; do
+        until $ping -q -c $count $IP > /dev/null; do
             sleep $delay;
-            date;
+            echo "${ERR}$(date) -- 100% packet loss${RST}"
         done
 
+        echo "${HIT}-------------------- UP --------------------${RST}"
         if [ -n "$flip" ]; then
             [ -n "$quiet" ] || /usr/bin/play -q ~/.themes/sounds/itsawak2.wav &
-            echo "${HIT}-------------------- UP --------------------${RST}"
             exec downyet $ARGS
         else
             [ -n "$quiet" ] \
