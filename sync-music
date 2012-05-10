@@ -30,7 +30,7 @@ rm_old () {
 
 case "$1" in
     usb)
-        echo "Verify mount:"
+        echo "Verify mount (/media/data/music):"
         mount | grep media
         echo Press Enter to continue Ctrl-C to abort.; read ignore
         rsync -vaiz --progress --size-only \
@@ -47,7 +47,7 @@ case "$1" in
         ;;
     player)
         MOUNT=/media/data/sdb
-        echo "Verify mount:"
+        echo "Verify mount: ($MOUNT)"
         mount | grep "$MOUNT"
         echo Press Enter to continue Ctrl-C to abort.; read ignore
         rsync -viz --progress --size-only \
