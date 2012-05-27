@@ -7,6 +7,9 @@ usage () {
     echo "hd     - sync goodlist playlist songs to local drive."
     echo "player - sync goodlist playlist songs to Sansa."
 }
+short-usage () {
+    echo "hd player usb"
+}
 
 # take all current songs in playlist, hardlink to a tmp dir and swap dirs
 rm_old () {
@@ -30,19 +33,21 @@ rm_old () {
 
 case "$1" in
     usb)
-        echo "Verify mount (/media/data/music):"
+        MOUNT=/media/data/music
+        echo "Verify mount ($MOUNT):"
         mount | grep media
         echo Press Enter to continue Ctrl-C to abort.; read ignore
         rsync -vaiz --progress --size-only \
-            /share/public/music/{artists,mixed,jazz} /media/data/music/
+            /share/public/music/{artists,mixed,jazz} $MOUNT/
         ;;
     hd)
-        echo "Verify NFS mount:"
+        MOUNT=/share/public
+        echo "Verify NFS mount ($MOUNT):"
         mount | grep "^nfs"
         echo Press Enter to continue Ctrl-C to abort.; read ignore
         rsync -viz --size-only --progress \
             --files-from ~/.mpd/playlists/goodsongs.m3u \
-            /share/public/music /home/jae/shelf/music
+            $MOUNT/music /home/jae/shelf/music
         #rm_old /home/jae/shelf/music
         ;;
     player)
@@ -56,6 +61,7 @@ case "$1" in
         cp ${HOME}/.mpd/playlists/goodsongs.m3u $MOUNT/MUSIC/playlist/
         sed -i 's/\//\\/g' $MOUNT/MUSIC/playlist/goodsongs.m3u 2> /dev/null
         ;;
+    list) short-usage ;;
     *) usage ;;
 esac
 
