@@ -13,22 +13,23 @@ short-usage () {
 
 # take all current songs in playlist, hardlink to a tmp dir and swap dirs
 rm_old () {
+    set -e
     src=$1
     [ -d "$src" ] || { echo "Missing source directory"; usage; exit 1; }
 
-    tmpdir="$src/.tmp"
-    mkdir -p $tmpdir
+    olddir="$src/old"
+    mkdir $olddir
+
+    mv $src/artists $src/mixed $olddir/
 
     (
-        cd $src
+        cd $olddir
         cat ~/.mpd/playlists/goodsongs.m3u | while read f ; do
-            cp --link --parent "$f" "$tmpdir/"
+            cp --link --parent "$f" "$src/"
         done
     )
 
-    rm -rf $src/artists $src/mixed
-    mv "$tmpdir/*" $src
-    rmdir $tmpdir
+    [ -d $olddir ] && rm -rf $olddir
 }
 
 case "$1" in
@@ -48,7 +49,7 @@ case "$1" in
         rsync -viz --size-only --progress \
             --files-from ~/.mpd/playlists/goodsongs.m3u \
             $MOUNT/music /home/jae/shelf/music
-        #rm_old /home/jae/shelf/music
+        rm_old /home/jae/shelf/music
         ;;
     player)
         MOUNT=/media/data/sdb
