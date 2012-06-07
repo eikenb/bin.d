@@ -56,10 +56,11 @@ case "$1" in
         echo "Verify mount: ($MOUNT)"
         mount | grep "$MOUNT"
         echo Press Enter to continue Ctrl-C to abort.; read ignore
-        rsync -viz --progress --size-only \
-            --files-from ${HOME}/.mpd/playlists/goodsongs.m3u \
-            /share/public/music $MOUNT/MUSIC/playlist/
         cp ${HOME}/.mpd/playlists/goodsongs.m3u $MOUNT/MUSIC/playlist/
+        sed -i 's/4a$/p3$/g' $MOUNT/MUSIC/playlist/goodsongs.m3u 2> /dev/null
+        rsync -viz --progress --size-only \
+            --files-from $MOUNT/MUSIC/playlist/goodsongs.m3u \
+            /share/public/music $MOUNT/MUSIC/playlist/
         sed -i 's/\//\\/g' $MOUNT/MUSIC/playlist/goodsongs.m3u 2> /dev/null
         ;;
     list) short-usage ;;
