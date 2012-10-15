@@ -1,0 +1,4 @@
+#!/bin/sh
+
+trap 'if mpc | grep -q paused ; then mpc stop; fi' 0
+ncmpc
