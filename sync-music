@@ -38,7 +38,7 @@ case "$1" in
         echo "Verify mount ($MOUNT):"
         mount | grep media
         echo Press Enter to continue Ctrl-C to abort.; read ignore
-        rsync -vaiz --progress --size-only \
+        rsync -vaiz --progress --size-only --delete \
             /share/public/music/{artists,mixed,jazz} $MOUNT/
         ;;
     hd)
@@ -46,7 +46,7 @@ case "$1" in
         echo "Verify NFS mount ($MOUNT):"
         mount | grep "^nfs"
         echo Press Enter to continue Ctrl-C to abort.; read ignore
-        rsync -viz --size-only --progress \
+        rsync -viz --size-only --progress --delete \
             --files-from ~/.mpd/playlists/goodsongs.m3u \
             $MOUNT/music /home/jae/shelf/music
         rm_old /home/jae/shelf/music
@@ -58,7 +58,7 @@ case "$1" in
         echo Press Enter to continue Ctrl-C to abort.; read ignore
         cp ${HOME}/.mpd/playlists/goodsongs.m3u $MOUNT/MUSIC/playlist/
         sed -i 's/4a$/p3$/g' $MOUNT/MUSIC/playlist/goodsongs.m3u 2> /dev/null
-        rsync -viz --progress --size-only \
+        rsync -viz --progress --size-only --delete \
             --files-from $MOUNT/MUSIC/playlist/goodsongs.m3u \
             /share/public/music $MOUNT/MUSIC/playlist/
         sed -i 's/\//\\/g' $MOUNT/MUSIC/playlist/goodsongs.m3u 2> /dev/null
