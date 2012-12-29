@@ -1,0 +1,7 @@
+#!/bin/sh
+
+cd /media/data/sdb/MUSIC
+rm playlist.m3u
+find . -type f | sed 's/\//\\/g' | sed 's/^..//'| grep -v playlist.m3u \
+    | sort > playlist.m3u
+

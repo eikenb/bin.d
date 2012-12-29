@@ -5,5 +5,5 @@ set -e
 SRC="$1"
 DST=${1%.*}.mp3
 
-#ffmpeg -i $SRC -acodec libmp3lame -aq 1 $DST
-avconv -i $SRC -acodec libmp3lame -aq 1 $DST
+ffmpeg -i $SRC -acodec libmp3lame -aq 1 $DST
+#avconv -i $SRC -acodec libmp3lame -aq 1 $DST
