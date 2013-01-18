@@ -57,7 +57,7 @@ case "$1" in
         mount | grep "$MOUNT"
         echo Press Enter to continue Ctrl-C to abort.; read ignore
         cp ${HOME}/.mpd/playlists/goodsongs.m3u $MOUNT/MUSIC/playlist/
-        sed -i 's/4a$/p3$/g' $MOUNT/MUSIC/playlist/goodsongs.m3u 2> /dev/null
+        sed -i 's/4a$/p3/g' $MOUNT/MUSIC/playlist/goodsongs.m3u 2> /dev/null
         rsync -viz --progress --size-only --delete \
             --files-from $MOUNT/MUSIC/playlist/goodsongs.m3u \
             /share/public/music $MOUNT/MUSIC/playlist/
