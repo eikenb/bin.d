@@ -28,6 +28,7 @@ cmd=`basename $0`
 delay=1
 adapt=
 quiet=
+vol=10
 
 ARGS="$@"
 usage () {
@@ -47,10 +48,11 @@ usage () {
     echo "-g google IP"
     echo "-l Level3 IP"
     echo "-d draal (my vps at prgmr.com)"
+    echo "-v 1-10 - volume - 10 normal, 1 almost silent"
     exit 0
 }
 
-while getopts Aadglhpfqi:c:t:s: arg; do
+while getopts Aadglhpfqi:c:t:s:v: arg; do
     case $arg in
         A) adapt=true; shift;;
         p) simpleping=true; [ $count -eq 1 ] && count= ; shift;;
@@ -59,6 +61,7 @@ while getopts Aadglhpfqi:c:t:s: arg; do
         f) flip=true; shift;;
         q) quiet=true; shift;;
         d) IP=$draal; shift;;
+        v) vol=$OPTARG; shift; shift;;
         l) IP=$level3; shift;;
         a|g) IP=$google; shift;;
         t|w) timeout=$OPTARG; shift; shift;;
@@ -66,6 +69,8 @@ while getopts Aadglhpfqi:c:t:s: arg; do
         h) usage;;
     esac
 done
+
+vol=$( echo "$vol/10." | bc -l)
 
 # non-flagged arg is IP/host
 [ -n "$1" ] && IP=$1
@@ -102,14 +107,14 @@ if [ "$cmd" = "downyet" ]; then
     done
 
     if [ -n "$flip" ]; then
-        [ -n "$quiet" ] || /usr/bin/play -q ~/.themes/sounds/thunder.wav &
+        [ -n "$quiet" ] || /usr/bin/play -v $vol -q ~/.themes/sounds/thunder.wav &
         echo "${ERR}-------------------- DOWN --------------------${RST}"
         report
         sleep $delay;
         exec upyet $ARGS
     else
         report
-        [ -n "$quiet" ] || exec /usr/bin/play -q ~/.themes/sounds/thunder.wav
+        [ -n "$quiet" ] || exec /usr/bin/play -v $vol -q ~/.themes/sounds/thunder.wav
     fi
 else
     ping="$ping -i $interval"
@@ -130,11 +135,11 @@ else
 
         echo "${HIT}-------------------- UP --------------------${RST}"
         if [ -n "$flip" ]; then
-            [ -n "$quiet" ] || /usr/bin/play -q ~/.themes/sounds/itsawak2.wav &
+            [ -n "$quiet" ] || /usr/bin/play -v $vol -q ~/.themes/sounds/itsawak2.wav &
             exec downyet $ARGS
         else
             [ -n "$quiet" ] \
-                || exec /usr/bin/play -q ~/.themes/sounds/itsawak2.wav
+                || exec /usr/bin/play -v $vol -q ~/.themes/sounds/itsawak2.wav
         fi
     fi
 fi
