@@ -5,7 +5,6 @@
 
 # XXX  change to use fping
 
-# kavi - 66.179.20.222
 # google - 64.233.187.99
 # isp nameserver -
 #   primary 24.197.160.17
@@ -17,6 +16,7 @@ draal=68.68.99.138 # draal
 level3=4.0.0.8
 #ISP=24.197.160.17 # isp nameserver
 
+# default
 IP=$yahoo
 
 flip=
