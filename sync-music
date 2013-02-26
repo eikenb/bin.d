@@ -57,12 +57,19 @@ case "$1" in
         echo "Verify mount: ($MOUNT)"
         mount | grep "$MOUNT"
         echo Press Enter to continue Ctrl-C to abort.; read ignore
-        cp ${HOME}/.mpd/playlists/goodsongs.m3u $MOUNT/MUSIC/playlist/
-        sed -i 's/4a$/p3/g' $MOUNT/MUSIC/playlist/goodsongs.m3u 2> /dev/null
+        PLAYLIST=${HOME}/.mpd/playlists/goodsongs.m3u
+        DEST=$MOUNT/MUSIC/playlist
+        cp $PLAYLIST $DEST
+        #sed -i 's/4a$/p3/g' $DEST/goodsongs.m3u 2> /dev/null
         rsync -viz --progress --size-only --delete \
-            --files-from $MOUNT/MUSIC/playlist/goodsongs.m3u \
-            /share/public/music $MOUNT/MUSIC/playlist/
-        sed -i 's/\//\\/g' $MOUNT/MUSIC/playlist/goodsongs.m3u 2> /dev/null
+            --files-from $DEST/goodsongs.m3u \
+            /share/public/music $DEST/
+        sed -i 's/\//\\/g' $DEST/goodsongs.m3u 2> /dev/null
+        # eliminate old songs
+        ${HOME}/.mpd/sort-good
+        (cd $DEST; find artists mixed -type f) | while read f ;
+            do look $f $PLAYLIST > /dev/null || echo $f ;
+        done | xargs -r rm
         ;;
     list) short-usage ;;
     *) usage ;;
