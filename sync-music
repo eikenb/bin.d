@@ -67,9 +67,12 @@ case "$1" in
         sed -i 's/\//\\/g' $DEST/goodsongs.m3u 2> /dev/null
         # eliminate old songs
         ${HOME}/.mpd/sort-good
-        (cd $DEST; find artists mixed -type f) | while read f ;
-            do look $f $PLAYLIST > /dev/null || echo $f ;
-        done | xargs -r rm
+        cwd=`pwd`
+        cd $DEST;
+        find artists mixed -type f | while read f ;
+            do look "$f" $PLAYLIST > /dev/null || echo -n "$f" ;
+        done | xargs -0 -r rm
+        cd $cwd
         ;;
     list) short-usage ;;
     *) usage ;;
