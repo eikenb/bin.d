@@ -1,0 +1,36 @@
+#!/bin/sh
+
+output="$1"
+
+nuforce () {
+    cat > ~jae/.asoundrc.default << EOF
+pcm.!default nuforce
+ctl.!default nuforce
+EOF
+}
+
+thinkpad () {
+    cat > ~jae/.asoundrc.default << EOF
+pcm.!default thinkpad
+ctl.!default thinkpad
+EOF
+}
+
+wine () { # nuforce w/o dmix
+    cat > ~jae/.asoundrc.default << EOF
+pcm.!default winegame
+ctl.!default nuforce
+EOF
+}
+
+usage () {
+    echo `basename $0` '[wine|nuforce|thinkpad]'
+}
+
+case $output in
+    w*) wine ;;
+    n*) nuforce ;;
+    t*) thinkpad ;;
+    *) usage ;;
+esac
+
