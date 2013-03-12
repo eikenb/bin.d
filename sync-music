@@ -18,6 +18,7 @@ rm_old () {
     [ -d "$src" ] || { echo "Missing source directory"; usage; exit 1; }
 
     olddir="$src/old"
+    [ -d "$olddir" ] && { echo "$olddir alredy exists!"; exit 1 }
     mkdir $olddir
 
     mv $src/artists $src/mixed $olddir/
