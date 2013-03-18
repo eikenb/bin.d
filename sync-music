@@ -69,9 +69,9 @@ case "$1" in
         # eliminate old songs
         ${HOME}/.mpd/sort-good
         cwd=`pwd`
-        cd $DEST;
+        cd $DEST/
         find artists mixed -type f | while read f ;
-            do look "$f" $PLAYLIST > /dev/null || echo -n "$f" ;
+            do look "$f" $PLAYLIST > /dev/null || echo -n "$f\0" ;
         done | xargs -0 -r rm
         cd $cwd
         ;;
