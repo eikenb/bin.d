@@ -2,8 +2,19 @@
 
 set -e
 
-SRC="$1"
-DST=${1%.*}.mp3
+iam=$0
+src="$1"
 
-ffmpeg -i $SRC -acodec libmp3lame -aq 1 $DST
-#avconv -i $SRC -acodec libmp3lame -aq 1 $DST
+case $iam in
+    anything-to-mp3)
+        dst=${1%.*}.mp3
+        ffmpeg -i $src -acodec libmp3lame -aq 1 $dst
+        #avconv -i $src -acodec libmp3lame -aq 1 $dst
+        ;;
+    anything-to-wav)
+        dst=${1%.*}.wav
+        ffmpeg -i $src -acodec pcm_s16le -ac 2 $dst
+        ;;
+esac
+
+
