@@ -2,7 +2,7 @@
 
 set -e
 
-iam=$0
+iam=$(basename $0)
 src="$1"
 
 case $iam in
