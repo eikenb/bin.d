@@ -142,6 +142,31 @@ add_to_list() {
     || ( type notify-send > /dev/null && notify-send "$li <- $song")
 }
 
+# remove current song from the list
+rm_from_list() {
+  local song li
+  # is mpd playing?
+  mpc | grep -Fq playing || exit 1
+  # get song filename
+  song="$(mpc --format %file% | head -n 1)"
+
+  # use tmp file for atomic operation + keep backup
+  grep -Fxv "$song" "$list" > "${list}.new"
+  cp -u "$list" "${list}.bak"
+  mv -u "${list}.new" "$list"
+  # keep log of old songs
+  echo "$song" >> "${list}.old"
+
+  # remove from currently playing list
+  mpc -q del 0
+
+  # notify user of event if possible
+  song=`basename "$song"`
+  li=`basename "$list"`
+  ([ -t 0 -a -t 1 ] && echo "$song removed from $li") \
+    || ( type notify-send > /dev/null && notify-send "$li <- $song")
+}
+
 # queue up a good song for when the current song ends
 smart_play() { (sleep $(get_lag) && mpc play $(get_one) &>/dev/null) & }
 
@@ -177,16 +202,18 @@ run() {
 
   create_list # create list file
 
+  # no more args... means add current song to list
   [ -z "$@" ] && add_to_list && exit
 
   for arg ; do
     case "$arg" in
-      -b|--build) build_playlist                ;;
-      -f|--find)  shift; search_list "$*"       ;;
-      -p|--play)  play_one                      ;;
-      -P|--print) printlist                     ;;
-      -s|--show)  show_one                      ;;
-      -S|--smart) smart_play                    ;;
+      -d|--delete) rm_from_list            ;;
+      -b|--build)  build_playlist          ;;
+      -f|--find)   shift; search_list "$*" ;;
+      -p|--play)   play_one                ;;
+      -P|--print)  printlist               ;;
+      -s|--show)   show_one                ;;
+      -S|--smart)  smart_play              ;;
     esac
   done
 }
