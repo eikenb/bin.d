@@ -11,7 +11,7 @@ EOF
 
 thinkpad () {
     cat > ~jae/.asoundrc.default << EOF
-pcm.!default thinkpad
+pcm.!default thinkpad_hw
 ctl.!default thinkpad
 EOF
 }
