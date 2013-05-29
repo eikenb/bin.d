@@ -10,9 +10,9 @@
 #   primary 24.197.160.17
 #   secondary 24.197.160.18
 #
-yahoo=68.142.255.16
+yahoo=98.138.253.109
 google=173.194.33.6
-draal=68.68.99.138 # draal
+draal=71.19.157.91
 level3=4.0.0.8
 #ISP=24.197.160.17 # isp nameserver
 
