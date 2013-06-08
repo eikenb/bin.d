@@ -18,6 +18,7 @@ usage: $program [option]
 
   options:
         -h, --help        display this
+        -d, --delete      remove from playlist
         -b, --build       build a playlist from your list, play it
         -f, --find regex  find a song in your list using grep 'regex'
         -l, --list name   use 'name' for list instead of '$program'
