@@ -17,6 +17,7 @@ usage() {
 usage: $program [option]
 
   options:
+        None              append playing song to list
         -h, --help        display this
         -d, --delete      remove from playlist
         -b, --build       build a playlist from your list, play it
@@ -28,7 +29,6 @@ usage: $program [option]
         -S, --smart       select a song from your list; find it in
                           your current playlist or add it; when the
                           current song ends, play it
-        none              append playing song to list
 EOF
   exit 1
 }
