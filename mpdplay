@@ -1,6 +1,6 @@
 #!/bin/sh
 
-mpc -q || mpd
+mpc -q || { mpd; sleep 0.1; }
 
 trap 'if mpc | grep -q paused ; then mpc stop; fi' 0
 ncmpc
