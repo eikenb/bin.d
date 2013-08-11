@@ -17,7 +17,7 @@ level3=4.0.0.8
 #ISP=24.197.160.17 # isp nameserver
 
 # default
-IP=$yahoo
+IP=$google
 
 flip=
 simpleping=
