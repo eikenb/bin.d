@@ -44,15 +44,15 @@ usage () {
     else
         echo '-t response timeout'
     fi
-    echo "default IP is a yahoo IP"
-    echo "-g google IP"
+    echo "-y yahoo IP"
+    echo "-g google IP (default)"
     echo "-l Level3 IP"
     echo "-d draal (my vps at prgmr.com)"
     echo "-v 1-10 - volume - 10 normal, 1 almost silent"
     exit 0
 }
 
-while getopts Aadglhpfqi:c:t:s:v: arg; do
+while getopts Aadglhpfqyi:c:t:s:v: arg; do
     case $arg in
         A) adapt=true; shift;;
         p) simpleping=true; [ $count -eq 1 ] && count= ; shift;;
@@ -63,7 +63,8 @@ while getopts Aadglhpfqi:c:t:s:v: arg; do
         d) IP=$draal; shift;;
         v) vol=$OPTARG; shift; shift;;
         l) IP=$level3; shift;;
-        a|g) IP=$google; shift;;
+        g) IP=$google; shift;;
+        y) IP=$yahoo; shift;;
         t|w) timeout=$OPTARG; shift; shift;;
         s|d) delay=$OPTARG; shift; shift;;
         h) usage;;
