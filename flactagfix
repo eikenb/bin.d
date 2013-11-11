@@ -1,6 +1,6 @@
 #!/bin/sh
 
-var_to_upper () {
+upcase_var () {
     VAR=${1%%=*};
     VAL=${1#*=}
     [ "$VAR" = "tracknumber" ] && VAR="NUMBER"
@@ -17,7 +17,7 @@ if [ $# -eq 1 ]; then
         src="$1"
         cmd="/usr/bin/lltag --yes --clear"
         while read v; do
-            cmd=$cmd$(var_to_upper "$v")
+            cmd=$cmd$(upcase_var "$v")
         done << EOF
 $(metaflac --export-tags-to=- "$src")
 EOF
