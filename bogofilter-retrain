@@ -7,16 +7,9 @@
 #
 # Cleans up tmp training mboxes.
 
-ham_files=(ai archive athens comm domain drdobbsjournal facebook family/knoll family/srobin fiona friends games go ham howto inbox janrain jobhunt list-info mlists notes openbox pdx projects pypy python root rxvt-unicode sjf srobin starship vps zmysqlda zsh)
-
-ham=()
-for hf in $ham_files; do
-    ham+=(~/Mail/$hf)
-done
-
-for file in ~/Mail/sentmail/*(.); do
-    ham+=($file)
-done
+# match all ~/Mail/* except those where exec'd statement is true
+# see ~/notes/shell/zsh/globbing/glob-qualifiers for details
+ham=(~/Mail/*(^e{'echo $REPLY | grep -q "spam\|Archive\|spf\|unsure"'}))
 
 # spam is much simpler as I collect my spam in one place
 spam=(~/Mail/spam-training)
@@ -29,11 +22,11 @@ rm -f $spamfile
 
 for file in $ham; do
     if [ -d "$file" ]; then
-	find "$file" -type f | while read f; do
-	    cat $f | formail >> $hamfile
-	done
+        find "$file" -type f | while read f; do
+            cat $f | formail >> $hamfile
+        done
     else
-	cat $file >> $hamfile
+        cat $file >> $hamfile
     fi
 done
 
@@ -42,8 +35,6 @@ for file in $spam; do
 done
 
 bogotrain=~/bin/bogominitrain.py
-#echo "perl $bogotrain -fnv -b '-o 0.95,0.35' $hamfile $spamfile"
-#perl $bogotrain -fnv -b '-o 0.95,0.35' $hamfile $spamfile
 echo "$bogotrain -fnv -b '-o 0.95,0.35' $hamfile $spamfile"
 $bogotrain -fnv -b '-o 0.95,0.35' $hamfile $spamfile
 echo 'done. removing tmp files'
