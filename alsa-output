@@ -9,6 +9,13 @@ ctl.!default nuforce
 EOF
 }
 
+aengine () {
+    cat > ~jae/.asoundrc.default << EOF
+pcm.!default aengine
+ctl.!default aengine
+EOF
+}
+
 thinkpad () {
     cat > ~jae/.asoundrc.default << EOF
 pcm.!default thinkpad_hw
@@ -24,13 +31,14 @@ EOF
 }
 
 usage () {
-    echo `basename $0` '[wine|nuforce|thinkpad]'
+    echo `basename $0` '[wine|nuforce|aengine|thinkpad|auto]'
 }
 
 case $output in
     w*) wine ;;
     n*) nuforce ;;
     t*) thinkpad ;;
+    a*) asound-set ;;
     *) usage ;;
 esac
 
