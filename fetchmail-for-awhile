@@ -1,0 +1,40 @@
+#!/bin/sh
+
+# every 5 minutes for 20 times (1/5min for 1 hour)
+[ -n "$1" ] && times="$1" || times=20
+[ -n "$2" ] && intvl="$2" || intvl=300
+
+set -e -u
+
+usage () {
+    echo usage: `basename $0` [-h] [times [interval]]
+    echo "\t-h       - this help"
+    echo "\ttimes    - number of times to get mail (default 6)"
+    echo "\tinterval - time (secs) to sleep b/w fetchmail calls (default 600)"
+    exit
+}
+
+[ "$times" = "-h" ] && usage
+
+exec sh -c '\
+times="$1"
+intvl="$2"
+
+log=/tmp/fetchmail.out
+chmod 700 $log
+
+echo -n > $log
+
+while [ $times -gt 0 ] ; do
+    echo "Getting mail..." >> $log
+    fetchmail >> $log 2>&1
+    #echo hi $times >> $log 2>&1
+    times=$((${times}-1))
+    echo "... ($times times left)\n" >> $log
+    [ $times -gt 0 ] && sleep $intvl
+done
+
+echo >> $log
+echo ...............done >> $log
+' fetchmail-loop $times $intvl &
+
