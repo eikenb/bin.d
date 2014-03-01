@@ -106,7 +106,7 @@ else
     exit 1
 fi
 
-x-www-browser $tmpdir/$html_file &
+x-www-browser --new-window $tmpdir/$html_file &
 #(x-www-browser $tmpdir/$html_file; sleep 3; rm $files $mbox; rmdir $tmpdir) &
 
 ## vim: ft=sh
