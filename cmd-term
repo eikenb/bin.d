@@ -1,0 +1,30 @@
+#!/bin/sh
+
+usage () {
+    echo "Usage: `basename $0` [options]"
+    echo "Options:"
+    echo "\t-t title"
+    echo "\t-g geometry"
+    echo "\t-b border color"
+    echo "\t-h help"
+    exit
+}
+
+geom=60x8
+border=rgb:44/44/44
+while getopts t:x:y:b:g:h arg; do
+    case $arg in
+        t) title=$OPTARG; shift; shift;;
+        g) geom=$OPTARG; shift; shift;;
+        b) border="$OPTARG"; shift; shift;;
+        h) usage;;
+    esac
+done
+
+[ -n "$title" ] || title="$@"
+
+x-terminal-emulator -fn terminus-16 -title "$title" \
+    -geometry "${geom}" -bl -b 1 -bd "$border" \
+    -pixmap "${HOME}/.themes/Wallpaper/pennyarcade_bkgd.png;0+0+0:op=tile" \
+    -e sh -c "$@"
+
