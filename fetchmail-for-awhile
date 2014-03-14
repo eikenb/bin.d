@@ -1,29 +1,42 @@
 #!/bin/sh
 
-# every 5 minutes for 20 times (1/5min for 1 hour)
-[ -n "$1" ] && times="$1" || times=20
-[ -n "$2" ] && intvl="$2" || intvl=300
-
-set -e -u
-
 usage () {
-    echo usage: `basename $0` [-h] [times [interval]]
+    echo usage: `basename $0` [-hl] [times [interval]]
+    echo "\t-b       - background and log output to /tmp/fetchmail.out"
     echo "\t-h       - this help"
     echo "\ttimes    - number of times to get mail (default 6)"
     echo "\tinterval - time (secs) to sleep b/w fetchmail calls (default 600)"
     exit
 }
 
-[ "$times" = "-h" ] && usage
+bkgrd=
+while getopts bh arg; do
+    case $arg in
+        b) bkgrd=yes; shift
+            ;;
+        h) usage
+            ;;
+    esac
+done
 
-exec sh -c '\
+# default to every 5 minutes for 20 times (1/5min for 1 hour)
+[ -n "$1" ] && times="$1" || times=20
+[ -n "$2" ] && intvl="$2" || intvl=300
+
+# make sure params are set from now on
+set -e -u
+
+script='\
 times="$1"
 intvl="$2"
+bkgrd="$3"
 
 log=/tmp/fetchmail.out
-chmod 700 $log
-echo -n > $log
-exec 1> $log 2>&1
+if [ -n "$bkgrd" ]; then
+    chmod 700 $log
+    echo -n > $log
+    exec 1> $log 2>&1
+fi
 
 while [ $times -gt 0 ] ; do
     echo "Getting mail..."
@@ -36,5 +49,10 @@ done
 
 echo
 echo ...............done
-' fetchmail-loop $times $intvl &
+'
+if [ -n "$bkgrd" ] ; then
+    exec sh -c "$script" fetchmail-loop $times $intvl yes &
+else
+    exec sh -c "$script" fetchmail-loop $times $intvl
+fi
 
