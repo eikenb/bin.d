@@ -4,8 +4,8 @@ usage () {
     echo usage: `basename $0` [-hl] [times [interval]]
     echo "\t-b       - background and log output to /tmp/fetchmail.out"
     echo "\t-h       - this help"
-    echo "\ttimes    - number of times to get mail (default 6)"
-    echo "\tinterval - time (secs) to sleep b/w fetchmail calls (default 600)"
+    echo "\ttimes    - number of times to get mail (default 20)"
+    echo "\tinterval - time (secs) to sleep b/w fetchmail calls (default 300)"
     exit
 }
 

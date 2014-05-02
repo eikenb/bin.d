@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Author: John Eikenberry <jae@zhar.net>
-# License: GPL 3.0 <http://www.gnu.org/licenses/gpl.txt>
+# License: CC0 <http://creativecommons.org/publicdomain/zero/1.0/>
 
 # (27.08.07) Fixed problem detecting html from munpack info
 # (01.10.07) Didn't remove tmp files on error condition.
@@ -17,7 +17,7 @@
 #
 # All temp files are cleaned up.
 #
-# To use from mutt include this keybinding in the approparite config file. 
+# To use from mutt include this keybinding in the approparite config file.
 # Replace <F> keys with whatever you like.
 #
 ## view an html email with firefox
@@ -37,7 +37,7 @@ file_info=`munpack -q -t -C $tmpdir $mbox`
 
 trap 'cleanup' 0
 cleanup () {
-    [ $? -eq 0 ] && sleep 1 # give browser a chance to run
+    [ $? -eq 0 ] && sleep 2 # give browser a chance to run
     rm -f $files $mbox
     [ -d $tmpdir ] && rmdir $tmpdir
 }
@@ -94,8 +94,7 @@ if [ -n "$html_file" ]; then
     if [ "$1" = "safe" ]; then
         grep -qi src=\"http $html_file
         if [ $? -eq 0 ]; then
-            # misses javascript places images, but noscript should 
-            # take care of those
+            # misses javascript placed images, disable js in browser if needed
             sed -i "s/src\s*=\s*\"*https*:\/\/[^\">]*\"*/src=\"#\"/g" $html_file
             sed -i "s/background\s*=\s*\"*https*:\/\/[^\">]*\"*/background=\"#\"/g" $html_file
         fi
@@ -107,6 +106,5 @@ else
 fi
 
 x-www-browser --new-window $tmpdir/$html_file &
-#(x-www-browser $tmpdir/$html_file; sleep 3; rm $files $mbox; rmdir $tmpdir) &
 
 ## vim: ft=sh
