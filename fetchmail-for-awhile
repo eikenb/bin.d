@@ -19,8 +19,8 @@ while getopts bh arg; do
     esac
 done
 
-# default to every 5 minutes for 20 times (1/5min for 1 hour)
-[ -n "$1" ] && times="$1" || times=20
+# default to every 5 minutes for 12 times (1/5min for 1 hour)
+[ -n "$1" ] && times="$1" || times=12
 [ -n "$2" ] && intvl="$2" || intvl=300
 
 # make sure params are set from now on
