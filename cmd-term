@@ -10,7 +10,7 @@ usage () {
     exit
 }
 
-geom=60x8
+geom=60x5
 border=rgb:44/44/44
 while getopts t:x:y:b:g:h arg; do
     case $arg in
