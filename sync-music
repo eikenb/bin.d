@@ -63,6 +63,7 @@ case "$1" in
         cp $PLAYLIST $DEST
         #sed -i 's/4a$/p3/g' $DEST/goodsongs.m3u 2> /dev/null
         rsync -viz --progress --size-only --delete \
+            --delete-before \
             --files-from $DEST/goodsongs.m3u \
             /share/public/music $DEST/
         sed -i 's/\//\\/g' $DEST/goodsongs.m3u 2> /dev/null
