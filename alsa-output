@@ -26,7 +26,7 @@ EOF
 wine () { # nuforce w/o dmix
     cat > ~jae/.asoundrc.default << EOF
 pcm.!default winegame
-ctl.!default nuforce
+ctl.!default aengine
 EOF
 }
 
@@ -35,7 +35,7 @@ usage () {
 }
 
 case $output in
-    w*) wine ;;
+    w*|g*) wine ;;
     n*) nuforce ;;
     t*) thinkpad ;;
     a*) asound-set ;;
