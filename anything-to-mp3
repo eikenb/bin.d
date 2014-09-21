@@ -10,7 +10,6 @@ case $iam in
     anything-to-mp3)
         [ -n "$dst" ] || dst=${1%.*}.mp3
         ffmpeg -i $src -acodec libmp3lame -aq 1 $dst
-        #avconv -i $src -acodec libmp3lame -aq 1 $dst
 
         # use -to hh:mm:ss to cut the end of the audio
         # eg. cut it off at 4 minutes 7 seconds
@@ -18,6 +17,7 @@ case $iam in
 
         # use -ss hh:mm:ss to cut off the beginning of the audio
         # cut off first 7 seconds of audio
+        #ffmpeg -i $src -acodec libmp3lame -aq 1 -ss 00:00:07 $dst
         #ffmpeg -i $src -acodec libmp3lame -aq 1 -ss 00:00:07 $dst
         ;;
     anything-to-wav)
