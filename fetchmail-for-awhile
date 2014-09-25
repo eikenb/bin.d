@@ -43,7 +43,7 @@ while [ $times -gt 0 ] ; do
     fetchmail
     #echo hi $times
     times=$((${times}-1))
-    echo "... ($times times left)\n"
+    echo -n "... ($times times left) ... "
     [ $times -gt 0 ] && sleep $intvl
 done
 
