@@ -6,26 +6,33 @@ usage () {
     echo "\t-t title"
     echo "\t-g geometry"
     echo "\t-b border color"
+    echo "\t-f focus window"
     echo "\t-h help"
     exit
 }
 
-geom=60x3
 border=rgb:44/44/44
-while getopts t:x:y:b:g:h arg; do
+title="$@"
+
+while getopts ft:b:g:h arg; do
     case $arg in
         t) title=$OPTARG; shift; shift;;
         g) geom=$OPTARG; shift; shift;;
         b) border="$OPTARG"; shift; shift;;
+        f) focus=true; shift;;
         h) usage;;
     esac
 done
 
-[ -n "$title" ] || title="$@"
+if [ -z "$geom" ]; then
+    y=$(( $(xdotool search --classname cmd-term | wc -l) * 50 + 1 ))
+    geom=60x3+1+${y}
+fi
+[ -n "$focus" ] && name='focused-cmd-term' || name='cmd-term'
 
 #cmd="{ $@ ;}"
 
-x-terminal-emulator -fn terminus-16 -name cmdterm -title "$title" \
+x-terminal-emulator -fn terminus-16 -name $name -title "$title" \
     -geometry "${geom}" -bl -b 1 -bd "$border" \
     -pixmap "${HOME}/.themes/Wallpaper/pennyarcade_bkgd.png;0+0+0:op=tile" \
     -e sh -c "$@"
