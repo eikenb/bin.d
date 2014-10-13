@@ -34,8 +34,8 @@ fi
 
 #cmd="{ $@ ;}"
 
-x-terminal-emulator -fn terminus-16 -name $name -title "$title" \
+exec x-terminal-emulator -fn terminus-16 -name $name -title "$title" \
     -geometry "${geom}" -bl -b 1 -bd "$border" \
     -pixmap "${HOME}/.themes/Wallpaper/pennyarcade_bkgd.png;0+0+0:op=tile" \
-    -e sh -c "$@"
+    -e sh -c "exec $@"
 
