@@ -40,7 +40,7 @@ fi
 
 while [ $times -gt 0 ] ; do
     echo "Getting mail..."
-    fetchmail
+    fetchmail 2>&1 | grep --line-buffered -v "^INFO: LOG"
     #echo hi $times
     times=$((${times}-1))
     echo -n "... ($times times left) ... "
