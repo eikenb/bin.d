@@ -25,8 +25,9 @@ while getopts ft:b:g:h arg; do
 done
 
 if [ -z "$geom" ]; then
-    desk=$(xdotool get_desktop)
-    num=$(xdotool search --desktop $desk --classname cmd-term | wc -l)
+    #desk=$(xdotool get_desktop)
+    #num=$(xdotool search --desktop $desk --classname cmd-term | wc -l)
+    num=$(xdotool search --onlyvisible --classname cmd-term | wc -l)
     y=$(( $num * 50 + 1 ))
     geom=60x3+1+${y}
 fi
