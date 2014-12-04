@@ -165,7 +165,7 @@ rm_from_list() {
   song=`basename "$song"`
   li=`basename "$list"`
   ([ -t 0 -a -t 1 ] && echo "$song removed from $li") \
-    || ( type notify-send > /dev/null && notify-send "$li <- $song")
+    || ( type notify-send > /dev/null && notify-send "$song <- $li")
 }
 
 # queue up a good song for when the current song ends
