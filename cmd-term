@@ -29,7 +29,7 @@ if [ -z "$geom" ]; then
     #num=$(xdotool search --desktop $desk --classname cmd-term | wc -l)
     num=$(xdotool search --onlyvisible --classname cmd-term | wc -l)
     y=$(( $num * 50 ))
-    geom=60x3+0+${y}
+    geom=64x3+0+${y}
 fi
 [ -n "$focus" ] && name='focused-cmd-term' || name='cmd-term'
 
