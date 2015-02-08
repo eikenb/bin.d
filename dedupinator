@@ -1,0 +1,23 @@
+#!/bin/sh
+
+tmpdir="./deduped"
+mkdir -p $tmpdir
+
+count=0
+while read file;
+do
+    [ -n "$file" ] || continue
+    count=$(($count + 1))
+    md5=$(md5sum -b $file | awk '{print $1}')
+    suffix=${file##*.}
+    dest="${tmpdir}/${md5}.${suffix}"
+    if [ -e ${dest} ]; then
+        echo "skipping duplicate ($count)"
+        continue
+    fi
+    echo "cp $file ${md5}.${suffix} ($count)"
+    cp $file ${dest}
+done
+
+echo "Deduped files in $tmpdir"
+echo "$count originals; $(ls $tmpdir | wc -l) deduped"
