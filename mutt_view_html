@@ -17,6 +17,11 @@
 #
 # All temp files are cleaned up.
 #
+# This was developed on a Debian system and might have some Debian assumptions
+# baked in (like the x-www-browser alternative).
+#
+# It uses things from the mpack and procmail debian packages.
+#
 # To use from mutt include this keybinding in the approparite config file.
 # Replace <F> keys with whatever you like.
 #
