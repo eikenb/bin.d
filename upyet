@@ -1,9 +1,9 @@
 #!/bin/sh
 
 # Author: John Eikenberry <jae@zhar.net>
-# License: GPL 3.0 <http://www.gnu.org/licenses/gpl.txt>
 
 # XXX  change to use fping
+# License: CC0 <http://creativecommons.org/publicdomain/zero/1.0/>
 
 # google - 64.233.187.99
 # isp nameserver -
