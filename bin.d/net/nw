@@ -1,0 +1,87 @@
+#!/bin/sh
+
+cmd="$1"
+
+ifaces () {
+    awk '/^iface/' /etc/network/interfaces | cut -d\  -f 2 \
+        | grep -v 'lo\|eth\|wlan\|default'
+    echo "eth0\ndown\nstatus\nscan"
+}
+[ -n "$cmd" ] || { ifaces; exit; }
+
+D="\033[0;31m"
+U="\033[1;32m"
+status () {
+    isup eth0 && echo "${U}eth0 up" || echo "${D}eth0 down"
+    if isup wlan0 ; then
+        echo -n "${U}wlan0 up on " && /sbin/iwgetid -r || echo "${D}wlan0 down"
+        /sbin/iwconfig wlan0 | grep -o 'Link Quality=[0-9/]\+'
+    fi
+}
+
+isup () {
+    case "$1" in
+        #eth0) test "x$(cat /sys/class/net/eth0/operstate)" = "xup" ;;
+        wlan0|eth0) ip link show "$1" | grep -q state\ UP ;;
+        *) isup eth0 || isup wlan0 ;;
+    esac
+}
+
+down() {
+    dev="$1"
+    sudo ifdown "$dev" 2> /dev/null
+    sudo ifdown --force "$dev" 2> /dev/null
+    sudo ip link set "$dev" down
+    sudo pkill dhclient
+}
+
+downup () {
+    down wlan0 2> /dev/null
+    down eth0 2> /dev/null
+    ifup_watch "$1"
+}
+
+ifup_watch () {
+    #sudo ifup "$1" 2> /dev/null
+    sudo ifup "$1"
+    #sudo ifup --verbose "$1"
+    [ "${1%=*}" = "wlan0" ] || return
+    while ! /sbin/iwgetid > /dev/null ; do
+        echo -n . ; sleep 1
+    done ; { echo -n ' connected to '; /sbin/iwgetid -r ;} | hl '.*'
+}
+
+newwpa () {
+    [ -n "$1" -a -n "$2" ] || { echo "missing ssid/psk args"; exit 1; }
+    ssid="$1"; psk="$2"
+    origin=$(pwd)
+    cd ~/projects/scripts/machines/neroon/etc/wpa_supplicant
+    echo "network={\n\tssid=\"${ssid}\"\n\tpsk=\"${psk}\"\n}" >> \
+        wpa_supplicant.conf
+    fab push:wpa_supplicant.conf
+}
+
+proxy_setup () {
+    touch /tmp/use-roaming-resolv-conf
+    trap '{ sleep 3; rm -f /tmp/use-roaming-resolv-conf; } &' 0
+}
+
+scan (){
+    if ! isup wlan0 ; then
+        sudo ip link set wlan0 up
+        trap 'sudo ip link set wlan0 down' 0
+    fi
+    sudo iwlist wlan0 scan
+}
+
+case $cmd in
+new) newwpa $2 $3 ;;
+proxy|p*) proxy_setup; ifup_watch wlan0 ;;
+wlan*|roam|r*|up|u*|on) ifup_watch wlan0 ;;
+eth0|e*) downup eth0 ;;
+down|d*|off|of*) { down eth0; down wlan0; } ;;
+stat|st*) status ;;
+scan|sc*) scan ;;
+*) ifup_watch wlan0=$cmd ;;
+esac
+
