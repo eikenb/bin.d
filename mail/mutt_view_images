@@ -10,8 +10,8 @@
 # in the approparite config file.
 #
 ## view a bunch of attached images
-#macro  index  <F9>  "<copy-message>/tmp/tmpbox\n<enter><shell-escape>~/bin/mutt-view-images.sh\n" "View images"
-#macro  pager  <F9>  "<copy-message>/tmp/tmpbox\n<enter><shell-escape>~/bin/mutt-view-images.sh\n" "View images"
+#macro  index  <F9>  "<copy-message>/tmp/tmpbox\n<enter><shell-escape>mutt-view-images\n" "View images"
+#macro  pager  <F9>  "<copy-message>/tmp/tmpbox\n<enter><shell-escape>mutt-view-images\n" "View images"
 
 tmpdir=/tmp/mutthtmltmpdir
 mbox=/tmp/tmpbox

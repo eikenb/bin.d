@@ -26,12 +26,12 @@
 # Replace <F> keys with whatever you like.
 #
 ## view an html email with firefox
-#macro  index  <F12>  "<copy-message>/tmp/tmpbox\n<enter><shell-escape>~/bin/mutt-view-html.sh\n" "View HTML in browser"
-#macro  pager  <F12>  "<copy-message>/tmp/tmpbox\n<enter><shell-escape>~/bin/mutt-view-html.sh\n" "View HTML in browser"
+#macro  index  <F12>  "<copy-message>/tmp/tmpbox\n<enter><shell-escape>mutt-view-html\n" "View HTML in browser"
+#macro  pager  <F12>  "<copy-message>/tmp/tmpbox\n<enter><shell-escape>mutt-view-html\n" "View HTML in browser"
 #
 ## safe version (no external images loaded)
-#macro  index  <F11>  "<copy-message>/tmp/tmpbox\n<enter><shell-escape>~/bin/mutt-view-html.sh safe\n" "View (safe) HTML in browser"
-#macro  pager  <F11>  "<copy-message>/tmp/tmpbox\n<enter><shell-escape>~/bin/mutt-view-html.sh safe\n" "View (safe) HTML in browser"
+#macro  index  <F11>  "<copy-message>/tmp/tmpbox\n<enter><shell-escape>mutt-view-html safe\n" "View (safe) HTML in browser"
+#macro  pager  <F11>  "<copy-message>/tmp/tmpbox\n<enter><shell-escape>mutt-view-html safe\n" "View (safe) HTML in browser"
 
 tmpdir=/tmp/mutthtmltmpdir
 mbox=/tmp/tmpbox
