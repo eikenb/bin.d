@@ -13,7 +13,7 @@
 #macro  index  <F9>  "<copy-message>/tmp/tmpbox\n<enter><shell-escape>mutt-view-images\n" "View images"
 #macro  pager  <F9>  "<copy-message>/tmp/tmpbox\n<enter><shell-escape>mutt-view-images\n" "View images"
 
-tmpdir=/tmp/mutthtmltmpdir
+tmpdir=/tmp/muttimagetmpdir
 mbox=/tmp/tmpbox
 
 trap 'cleanup_on_error' 0
@@ -33,6 +33,6 @@ cleanup () {
     rm -f $files $mbox
     rmdir $tmpdir
 }
-geeqie) > /dev/null 2>&1 &
+gpicview) > /dev/null 2>&1 &
 
 ## vim: ft=sh
