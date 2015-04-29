@@ -16,6 +16,14 @@ ctl.!default aengine
 EOF
 }
 
+# borderlands-2 liked this best
+aengine48 () {
+    cat > ~jae/.asoundrc.default << EOF
+pcm.!default aengine48
+ctl.!default aengine
+EOF
+}
+
 thinkpad () {
     cat > ~jae/.asoundrc.default << EOF
 pcm.!default thinkpad_hw
@@ -38,7 +46,8 @@ case $output in
     w*|g*) wine ;;
     n*) nuforce ;;
     t*) thinkpad ;;
-    a*) asound-set ;;
+    a48) aengine48 ;;
+    auto|a*) asound-set ;;
     *) usage ;;
 esac
 
