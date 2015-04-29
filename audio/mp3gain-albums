@@ -7,8 +7,7 @@
 find . -type d | while read d; do
     if ls "$d"/*.mp3 > /dev/null 2>&1; then
         echo +++++ Processing "$d"
-        /usr/bin/mp3gain -s r "$d"/*.mp3
-        ape2id3.py -f "$d"/*.mp3
+        replaygain -f "$d"/*.mp3
         echo; echo
     fi
 done
