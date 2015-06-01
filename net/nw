@@ -42,7 +42,6 @@ downup () {
 }
 
 ifup_watch () {
-    #sudo ifup "$1" 2> /dev/null
     sudo ifup "$1"
     #sudo ifup --verbose "$1"
     [ "${1%=*}" = "wlan0" ] || return
