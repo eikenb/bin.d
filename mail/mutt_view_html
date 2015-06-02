@@ -79,18 +79,22 @@ files=`echo $files | sed "s/$file_html/$html_file/"`
 if [ -n "$html_file" ]; then
     grep -qi src=\"cid: $html_file
     if [ $? -eq 0 ]; then
-        filenames=`grep -i content-disposition $mbox | \
-            sed -e 's/.*filename="\([^"]\+\)"/\1/'`
+        filenames=`grep -i content-disposition $mbox \
+            | sed -e 's/.*filename="\([^"]\+\)"/\1/'`
         if [ -z $filesnames ]; then
             # unnamed file attachments :P
             filenames="$data_files"
         fi
-        cids=`grep -i content-id $mbox | \
-            sed -e 's/Content-ID: <\([^<>]\+\)>/\1/'`
+        # only fix image refereneces
+        # include 10 as content-disposition is sometimes long
+        cids=`grep -A 10 -i "content-type: image/" $mbox \
+            | grep -i content-id \
+            | sed -e 's/Content-ID: <\([^<>]\+\)>/\1/'`
 
         count=1
         for fn in $filenames; do
             cid=`echo $cids | awk -v count=$count '{ print $count }'`
+            echo $fn $cid
             #count=`dc -e "1 $count + p"`
             count=$(( 1 + $count ))
             sed -i "s/cid:$cid/$fn/g" $html_file
