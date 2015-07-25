@@ -2,20 +2,16 @@
 
 # Author: John Eikenberry <jae@zhar.net>
 
-# XXX  change to use fping
 # License: CC0 <http://creativecommons.org/publicdomain/zero/1.0/>
 
-# google - 64.233.187.99
-# isp nameserver -
-#   primary 24.197.160.17
-#   secondary 24.197.160.18
-#
+# XXX  change to use fping
+
+# Random IPs to test against
 yahoo=206.190.36.45
 google=173.194.33.135
-draal=71.19.157.91
 level3=4.0.0.8
-zathra=192.241.238.164
-#ISP=24.197.160.17 # isp nameserver
+draal=71.19.157.91
+lyta=45.55.2.73
 
 # default
 IP=$google
@@ -33,7 +29,7 @@ vol=10
 
 ARGS="$@"
 usage () {
-    echo "usage: $cmd [options] [IP]"
+    echo "usage: $cmd [options] [IP/Domain]"
     echo "-i ping interval"
     echo "-s sleep delay"
     echo "-q quiet (no sounds)"
@@ -48,12 +44,12 @@ usage () {
     echo "-y yahoo IP"
     echo "-g google IP (default)"
     echo "-l Level3 IP"
-    echo "-d draal (my vps at prgmr.com)"
+    echo "-m One of My VPSs"
     echo "-v 1-10 - volume - 10 normal, 1 almost silent"
     exit 0
 }
 
-while getopts Aadglhpfqyi:c:t:s:v: arg; do
+while getopts Aaglhmpfqyi:c:t:s:v: arg; do
     case $arg in
         A) adapt=true; shift;;
         p) simpleping=true; [ $count -eq 1 ] && count= ; shift;;
@@ -61,7 +57,7 @@ while getopts Aadglhpfqyi:c:t:s:v: arg; do
         i) interval=$OPTARG; shift; shift;;
         f) flip=true; shift;;
         q) quiet=true; shift;;
-        d) IP=$draal; shift;;
+        m) IP=$lyta; shift;;
         v) vol=$OPTARG; shift; shift;;
         l) IP=$level3; shift;;
         g) IP=$google; shift;;
