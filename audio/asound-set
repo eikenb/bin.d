@@ -1,0 +1,46 @@
+#!/bin/sh
+
+## set asound devices in ~/.asoundrc.default based on what is plugged in
+# .asoundrc.default is included in my ~/.asoundrc
+# my .asoundrc is in my local config repo
+
+nuforce="
+pcm.!default nuforce
+ctl.!default nuforce
+"
+aengine="
+pcm.!default aengine
+ctl.!default aengine
+"
+thinkpad="
+pcm.!default thinkpad
+ctl.!default thinkpad
+"
+
+{
+if [ -d /proc/asound/N2 ]; then
+    echo "$nuforce"
+elif [ -d /proc/asound/D1 ]; then
+    echo "$aengine"
+else
+   echo "$thinkpad"
+fi
+} | tee ~/.asoundrc.default
+
+
+# reference
+"
+[/proc:1]cat /proc/asound/cards
+ 1 [D1             ]: USB-Audio - Audioengine D1
+                                        2010 REV 1.7 Audioengine D1 at usb-0000:00:1a.0-1.2.2, full s
+ 4 [ThinkPadEC     ]: ThinkPad EC - ThinkPad Console Audio Control
+                      ThinkPad Console Audio Control at EC reg 0x30, fw unknown
+
+[/proc]ll /proc/asound/D1
+lrwxrwxrwx 1 root root 5 Feb 13 23:01 /proc/asound/D1 -> card1/
+
+[/proc]ll /proc/asound/ThinkPadEC
+lrwxrwxrwx 1 root root 5 Feb 13 23:02 /proc/asound/ThinkPadEC -> card4/
+"
+
+

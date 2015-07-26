@@ -1,7 +1,11 @@
 #!/bin/sh
 
+# I play at being an audiophile sometimes so I have multiple external DACs.
+# This lets me set which one ALSA defaults to.
+
 output="$1"
 
+# my first DAC, nuforce uDAC2
 nuforce () {
     cat > ~jae/.asoundrc.default << EOF
 pcm.!default nuforce
@@ -9,6 +13,8 @@ ctl.!default nuforce
 EOF
 }
 
+# Audioengine D1 DAC
+# better reviewed than the nuforce, I agree
 aengine () {
     cat > ~jae/.asoundrc.default << EOF
 pcm.!default aengine
@@ -16,7 +22,7 @@ ctl.!default aengine
 EOF
 }
 
-# borderlands-2 liked this best
+# steam/borderlands-2 liked this setting
 aengine48 () {
     cat > ~jae/.asoundrc.default << EOF
 pcm.!default aengine48
@@ -24,6 +30,7 @@ ctl.!default aengine
 EOF
 }
 
+# if I'm desperate
 thinkpad () {
     cat > ~jae/.asoundrc.default << EOF
 pcm.!default thinkpad_hw
@@ -31,7 +38,8 @@ ctl.!default thinkpad
 EOF
 }
 
-wine () { # nuforce w/o dmix
+# wine really hates dmix
+wine () {
     cat > ~jae/.asoundrc.default << EOF
 pcm.!default winegame
 ctl.!default aengine
