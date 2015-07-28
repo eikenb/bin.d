@@ -42,6 +42,7 @@ downup () {
 }
 
 ifup_watch () {
+    sudo rfkill unblock wifi # wifi randomly blocked from time to time
     sudo ifup "$1"
     #sudo ifup --verbose "$1"
     [ "${1%=*}" = "wlan0" ] || return
