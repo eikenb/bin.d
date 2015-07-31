@@ -29,7 +29,7 @@ fi
 
 
 # reference
-"
+doc="
 [/proc:1]cat /proc/asound/cards
  1 [D1             ]: USB-Audio - Audioengine D1
                                         2010 REV 1.7 Audioengine D1 at usb-0000:00:1a.0-1.2.2, full s
