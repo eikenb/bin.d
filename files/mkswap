@@ -1,0 +1,50 @@
+#!/bin/sh
+
+# automated notes on how to make a swap file
+#
+# Cheap RAM + SSDs == no need for swap partitions in many cases.
+# Keep this around to add some swap when I think I need it.
+
+noc="\033[0m"
+red="\033[0;31m"
+usage () {
+    [ -n "$1" ] && printf "$red$1$noc\n"
+    name=`basename $0`
+    echo "Usage: $name SWAPFILE SIZE_IN_MB"
+    echo "(Example: $name /var/swap 1024)"
+    exit 1
+}
+
+# run as root
+[ $(id -u) -eq 0 ] || usage "Run as root"
+
+# argument checking
+[ $# -eq 2 ] || usage "Not enough arguments"
+
+swapfile="$1"
+[ -n "$swapfile" ] || usage
+#[ "${swapfile%%/*}" = "" ] || usage "SWAPFILE must be full path"
+[ -e "$swapfile" ] && usage "$swapfile already exists!"
+
+# make sure we can create the file and set it up right
+touch $swapfile
+chown root:root ${swapfile}
+chmod 0600 ${swapfile}
+# get true full path
+swapfile=$(readlink -e $swapfile)
+
+# block-count; ie. 1024 * 512 for 512M swapfile
+size_in_mb="$2"
+[ $size_in_mb -ge 0 2> /dev/null ] \
+    || usage "$size_in_mb is not a positive integer"
+block_count=$(( $size_in_mb * 1024 ))
+
+# do it
+dd if=/dev/zero of=${swapfile} bs=1024 count=${block_count}
+mkswap ${swapfile}
+swapon ${swapfile}
+
+# reminder about fstab
+echo "Add this to /etc/fstab"
+echo "# swap file created on" $(date +"%F")
+echo "$swapfile none    swap    sw      0       0"
