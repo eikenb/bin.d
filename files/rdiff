@@ -18,17 +18,25 @@ syncdir=.sync
 if [ -d "$1" -a -e "$target_home" ]; then
     # specify the target or ...
     target="$1"
+    target_home=.
 else
     # try to determine it based on path (needs .target_home)
-    target=$(path=$PWD;
-        while [ $path ]; do
-            nextpath=${path%/*}
-            [ -e $nextpath/${target_home} ] && basename $path && break;
-            path=${nextpath}
-        done)
+    path=$PWD;
+    while [ $path ]; do
+        nextpath=${path%/*}
+        if [ -e $nextpath/${target_home} ]; then
+            target=${path##*/}
+            target_home=${path%/*}
+            break
+        fi
+        path=${nextpath}
+    done
 fi
 
 [ -n "$target" ] || { echo "missing target host/directory"; exit 1; }
+
+# change to target/host parent directory
+cd $target_home
 
 # this grabs the relevant password from my encrypted password file
 sudopwd=$(catpwd | grep $target | grep $USER | cut -d ' ' -f 3)
