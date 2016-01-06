@@ -45,10 +45,21 @@ sudopwd=$(catpwd | grep $target | grep $USER | cut -d ' ' -f 3)
 rsync -axHAX --delete --delete-excluded --exclude '*.swp' --exclude '*~' \
     --copy-unsafe-links ${target}/ ${target}:${syncdir}
 
+# if run as rstat (via sym-link), only return list of differing files
+isrstat () { test "${0##*/}" = "rstat" ; }
+diffopts="-u"
+isrstat && diffopts="-q"
+
+# colorize output if pygmentize is available and output is to tty
+alias ccat=cat
+[ -t 1 ] && type pygmentize > /dev/null && alias ccat=pygmentize
+
 # use ssh to run diff command using sync'd file against local files
 # run with sudo to access all files for diff
 echo $sudopwd | ssh -t ${target} "
 mkdir -p ${syncdir}
 cd ${syncdir}
-sudo -p '' -S sh -c 'find * \( -type f -o -type l \) -print0 | xargs -0 -n 1 -I{} diff -u --unidirectional-new-file /{} {}'
-"
+sudo -p '' -S \
+    sh -c 'find * \( -type f -o -type l \) -print0 \
+    | xargs -0 -n 1 -I{} diff ${diffopts} --unidirectional-new-file /{} {}'
+" | { isrstat && cut -d ' ' -f 2 || ccat ; }
