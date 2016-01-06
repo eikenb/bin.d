@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# diff local directory vs remote from the root (/)
+#
+# Used to compare ansible file sync setups, to see what the differences are
+# that will be pushed. Stop gap until ansible sync supports '--diff --check'.
+
+set -e
+
+# place this file in the parent directory to where you keep the various hosts
+# sync directories. I name the sync directories after the hosts, so the
+# 'target' directory is the same as the 'target' host.
+target_home=.target_home
+
+# creates ~/.sync on remote machine to copy files over for diffing
+syncdir=.sync
+
+if [ -d "$1" -a -e "$target_home" ]; then
+    # specify the target or ...
+    target="$1"
+else
+    # try to determine it based on path (needs .target_home)
+    target=$(path=$PWD;
+        while [ $path ]; do
+            nextpath=${path%/*}
+            [ -e $nextpath/${target_home} ] && basename $path && break;
+            path=${nextpath}
+        done)
+fi
+
+[ -n "$target" ] || { echo "missing target host/directory"; exit 1; }
+
+# this grabs the relevant password from my encrypted password file
+sudopwd=$(catpwd | grep $target | grep $USER | cut -d ' ' -f 3)
+
+# sync local directory over for comparison
+rsync -axHAX --delete --delete-excluded --exclude '*.swp' --exclude '*~' \
+    --copy-unsafe-links ${target}/ ${target}:${syncdir}
+
+# use ssh to run diff command using sync'd file against local files
+# run with sudo to access all files for diff
+echo $sudopwd | ssh -t ${target} "
+mkdir -p ${syncdir}
+cd ${syncdir}
+sudo -p '' -S sh -c 'find * \( -type f -o -type l \) -print0 | xargs -0 -n 1 -I{} diff -u --unidirectional-new-file /{} {}'
+"
