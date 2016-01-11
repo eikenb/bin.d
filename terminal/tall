@@ -8,7 +8,7 @@ width=${dimensions%x*}
 height=${dimensions#*x}
 
 cmd=`basename $0`
-chg=10
+chg=14
 [ -n "$1" ] && chg="$1"
 if [ $cmd = "short" ] ; then 
     height=$(( $height-$chg ))
