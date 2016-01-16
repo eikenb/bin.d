@@ -3,3 +3,7 @@
 # reset command does this better than below
 # comes with ncurses-bin package
 /usr/bin/reset
+
+# it resets ^S tty suspending which I hate and disable by default
+# so re-unset it
+stty -ixon start undef stop undef
