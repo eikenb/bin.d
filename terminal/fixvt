@@ -1,26 +1,5 @@
 #!/bin/sh
 
 # reset command does this better than below
+# comes with ncurses-bin package
 /usr/bin/reset
-
-#   fixvt 1.00
-#   Fixes console corruption from vt bombs and the like
-#    (c) 1994 Brian Stoler  --  sto2@netaxs.com
-#    Freely redistributable under the GPL 2
-#        Mail me any changes/fixes/etc
-#        Send flames to /dev/null -- I'm no scripter
-#if [ -r /etc/mingetty ]; then
- #DAG=/etc/mingetty
-#elif [ -r /sbin/getty ]; then
- #DAG=/sbin/getty
-#elif [ -r $1 ]; then
- #DAG=$1
-#else
- #echo No getty found -- put getty on cmd line
- #exit 1
-#fi
-#cat $DAG
-#echo c
-#clear
-#echo Display restored.
-
