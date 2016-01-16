@@ -2,7 +2,7 @@
 #
 # goodsong v2.2
 #
-# Copyright (C) 2010 John Eikenberry <jae@zhar.net>
+# Copyright (C) 2010,2016 John Eikenberry <jae@zhar.net>
 #
 # Originally based on goodsong from: http://pbrisbin.com:8080/bin/goodsong
 #  by pbrisbin 2009, 2010
@@ -140,7 +140,7 @@ add_to_list() {
   song=`basename "$song"`
   li=`basename "$list"`
   ([ -t 0 -a -t 1 ] && echo "$song added to $li") \
-    || ( type notify-send > /dev/null && notify-send "$li <- $song")
+    || ( type notify-send > /dev/null && notify-send "$li ++ $song")
 }
 
 # remove current song from the list
@@ -165,7 +165,7 @@ rm_from_list() {
   song=`basename "$song"`
   li=`basename "$list"`
   ([ -t 0 -a -t 1 ] && echo "$song removed from $li") \
-    || ( type notify-send > /dev/null && notify-send "$song <- $li")
+    || ( type notify-send > /dev/null && notify-send "$li -- $song ")
 }
 
 # queue up a good song for when the current song ends
