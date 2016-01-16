@@ -1,0 +1,6 @@
+#!/bin/sh
+# duplicate urxvt terminal with same geometry
+
+geometry=`xwininfo -id $WINDOWID \
+    | grep geometry | awk '{print $2}'`
+urxvtc -geometry $geometry
