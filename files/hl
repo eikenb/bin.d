@@ -2,6 +2,8 @@
 
 # highlights patterns of text
 
+# color-num can be 0-15, 0-87, 0-255 depending on your terminal
+
 usage () {
     [ -n "$2" ] && echo "$2"
     echo -n "COMMAND | `basename $0` [options]"
@@ -31,10 +33,15 @@ if [ $# -eq 1 ]; then
     patterns="s/\($1\)/[38;5;${color}m\1[0m/g$case;"
 else
     while [ -n "$1" ]; do
-        echo "$1" | grep -q "^[[:digit:]]\+$" || usage 1
-        [ -n "$2" ] || usage 1
-        patterns="$patterns s/\($2\)/[38;5;$1m\1[0m/g$case;"
-        shift;shift
+        if echo "$1" | grep -q "^[[:digit:]]\+$"; then
+            [ -n "$2" ] || usage 1
+            color="$1"
+            shift
+        else
+            color=190
+        fi
+        patterns="$patterns s/\($1\)/[38;5;${color}m\1[0m/g$case;"
+        shift
     done
 fi
 
