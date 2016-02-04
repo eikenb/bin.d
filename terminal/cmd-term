@@ -32,6 +32,6 @@ fi
 [ -n "$focus" ] && name='focused-cmd-term' || name='cmd-term'
 
 exec x-terminal-emulator -fn terminus-16 -name $name -title "$title" \
-    -geometry "${geom}" -bl -b 1 -bd "$border" \
+    -geometry "${geom}" -bl -b 1 -bd "$border" -cr grey \
     -pixmap "${HOME}/.themes/Wallpaper/pennyarcade_bkgd.png;0+0+0:op=tile" \
     -e sh -c "$@"
