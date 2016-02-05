@@ -31,7 +31,16 @@ if [ -z "$geom" ]; then
 fi
 [ -n "$focus" ] && name='focused-cmd-term' || name='cmd-term'
 
-exec x-terminal-emulator -fn terminus-16 -name $name -title "$title" \
-    -geometry "${geom}" -bl -b 1 -bd "$border" -cr grey \
-    -pixmap "${HOME}/.themes/Wallpaper/pennyarcade_bkgd.png;0+0+0:op=tile" \
-    -e sh -c "$@"
+#-pixmap "${HOME}/.themes/Wallpaper/pennyarcade_bkgd.png;0+0+0:op=tile" \
+if type urxvtcd
+then
+    exec urxvtcd -fn terminus-16 -name $name -title "$title" \
+        -geometry "${geom}" -bl -b 0 -bd "$border" -cr grey \
+        -depth 32 -fg grey -bg '[00]#1d1d1d' \
+        -e sh -c "$@"
+else # terminal lowest common denominator
+    exec x-terminal-emulator -fn terminus-16 -name $name -title "$title" \
+        -geometry "${geom}" -b 1 -cr grey \
+        -e sh -c "$@"
+fi
+
