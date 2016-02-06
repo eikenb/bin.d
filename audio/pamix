@@ -1,0 +1,62 @@
+#!/bin/sh
+
+## script to change volume of pulse-audio via command line
+## for now only works on default
+
+default_sink=$(pacmd list-sinks | awk '/* index:/ {print $3}')
+
+volume=$(pacmd dump-volumes \
+    | awk -F= "/Sink $default_sink/ { print \$3 }" \
+    | awk '{ print $1$4,$8$11}')
+
+usage() {
+    [ -n "$1" ] && echo "$1"
+    echo "Usage: $(basename $0) [command] [percent-change]"
+    echo "Commands:"
+    echo "\t+/up       volume up"
+    echo "\t-/down     volume down"
+    echo "Examples:"
+    echo "\t\"$(basename $0) up 10\" - increase volume by 10%"
+    echo "\t\"$(basename $0) -5\" - decrease volume by 5%"
+    exit 1
+}
+
+change=$(echo "$1" | grep -o "[0-9]\+")
+[ -n "$2" ] && change="$2"
+[ -n "$change" ] || change=5
+
+volume=$(pacmd dump-volumes \
+    | awk -F= "/Sink $default_sink/ { print \$3 }" \
+    | awk '{ print $4 }')
+
+ceil () { vol="${1%*%}"; chg="$2"
+    newvol=$(( $vol + $chg ))
+    mod=$(( $newvol - 100 ))
+    [ $newvol -gt 100 ] && echo $(( $chg - $mod )) || echo $chg
+}
+
+floor () { vol="${1%*%}"; chg="$2"
+    newvol=$(( $volume - $chg ))
+    [ $newvol -lt 0 ] && echo $(( $chg + $newvol )) || echo $chg
+}
+
+# strip off number if it was right against modifier (eg. +10)
+cmd=$(echo "$1" | sed 's/[0-9]\+//g')
+
+case $cmd in
+    +|u*)
+        change=$(ceil $volume $change)
+        pactl -- set-sink-volume ${default_sink} +${change}%
+        ;;
+    -|d*)
+        change=$(floor $volume $change)
+        pactl -- set-sink-volume ${default_sink} -${change}%
+        ;;
+    -h|-?) usage ;;
+esac
+
+# final volume
+pacmd dump-volumes \
+    | awk -F= "/Sink $default_sink/ { print \$3 }" \
+    | awk '{ print $4"/"$11}'
+
