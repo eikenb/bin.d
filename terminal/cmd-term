@@ -24,6 +24,7 @@ while getopts ft:b:g:h arg; do
     esac
 done
 
+# if not specified, draw in upper right corner, top down
 if [ -z "$geom" ]; then
     num=$(xdotool search --onlyvisible --classname cmd-term | wc -l)
     y=$(( $num * 50 ))
@@ -31,16 +32,18 @@ if [ -z "$geom" ]; then
 fi
 [ -n "$focus" ] && name='focused-cmd-term' || name='cmd-term'
 
+[ -n "$SHELL" ] || SHELL=/bin/sh
+
 #-pixmap "${HOME}/.themes/Wallpaper/pennyarcade_bkgd.png;0+0+0:op=tile" \
 if type urxvtcd
 then
     exec urxvtcd -fn terminus-16 -name $name -title "$title" \
         -geometry "${geom}" -bl -b 0 -bd "$border" -cr grey \
-        -depth 32 -fg grey -bg '[00]#1d1d1d' \
-        -e sh -c "$@"
+        -depth 32 -fg grey -bg '[00]#2d2d2d' \
+        -e $SHELL -c "$@"
 else # terminal lowest common denominator
     exec x-terminal-emulator -fn terminus-16 -name $name -title "$title" \
         -geometry "${geom}" -b 1 -cr grey \
-        -e sh -c "$@"
+        -e $SHELL -c "$@"
 fi
 
