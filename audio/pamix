@@ -26,7 +26,6 @@ change=$(echo "$1" | grep -o "[0-9]\+")
 if [ -z "$change" ]; then
     change=$(( 5 * $(echo $1 | grep -o -- "[+-]" | wc -w) ))
 fi
-echo change: $change
 
 volume=$(pacmd dump-volumes \
     | awk -F= "/Sink $default_sink/ { print \$3 }" \
