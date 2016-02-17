@@ -46,11 +46,11 @@ floor () { vol="${1%*%}"; chg="$2"
 cmd=$(echo "$1" | sed 's/[0-9]\+//g')
 
 case $cmd in
-    +[+]*|u*)
+    [+]*|u*)
         change=$(ceil $volume $change)
         pactl -- set-sink-volume ${default_sink} +${change}%
         ;;
-    -[-]*|d*)
+    [-]*|d*)
         change=$(floor $volume $change)
         pactl -- set-sink-volume ${default_sink} -${change}%
         ;;
