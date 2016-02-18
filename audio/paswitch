@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# Author: John Eikenberry <jae@zhar.net>
+# License: CC0 <http://creativecommons.org/publicdomain/zero/1.0/>
+# Switch all running apps to use same sound card.
+#
+# written from scratch, but the idea came from a script in the FAQ
+# https://wiki.freedesktop.org/www/Software/PulseAudio/FAQ/#index40h3
+
+# sanity check
+scount=$(pacmd "list-sinks" | grep card: | wc -l)
+[ $scount -le 1 ] && exit
+
+default_sink=$(pacmd list-sinks | awk '/* index:/ {print $3}')
+sinks=$(pacmd list-sinks | tr -d '*' | awk '/index/ {print $2}')
+
+# find next sink, wrapping around to first
+new_sink=$(echo $sinks | head -1)
+for sink in $sinks; do
+    if [ -n "$foundsink" ]; then
+        new_sink=$sink
+        break
+    fi
+    [ "$sink" = "$default_sink" ] && foundsink=true
+done
+pacmd "set-default-sink $new_sink"
+
+# set all current inputs to the new sink
+inputs=$(pacmd list-sink-inputs | awk '/index:/ {print $2}')
+for input in $inputs; do
+  pacmd move-sink-input $input $new_sink
+done
+
+# output new device description
+echo -n "New device: "
+pacmd list-sinks \
+    | awk "/index: $new_sink/,/index: [^$new_sink]/" \
+    | awk -F= '/device.description/ {print $2}' \
+    | tr -d '"' | awk '{$1=$1;print}'
