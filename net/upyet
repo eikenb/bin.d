@@ -25,7 +25,7 @@ cmd=`basename $0`
 delay=1
 adapt=
 quiet=
-vol=10
+vol=5
 
 ARGS="$@"
 usage () {
