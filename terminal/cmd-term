@@ -35,9 +35,9 @@ fi
 [ -n "$SHELL" ] || SHELL=/bin/sh
 
 #-pixmap "${HOME}/.themes/Wallpaper/pennyarcade_bkgd.png;0+0+0:op=tile" \
-if type urxvtcd
+if type urxvt
 then
-    exec urxvtcd -fn terminus-16 -name $name -title "$title" \
+    exec urxvt -fn terminus-16 -name $name -title "$title" \
         -geometry "${geom}" -bl -b 0 -bd "$border" -cr grey \
         -depth 32 -fg grey -bg '[00]#2d2d2d' \
         -e $SHELL -c "$@"
