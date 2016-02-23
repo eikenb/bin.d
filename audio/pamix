@@ -58,7 +58,13 @@ case $cmd in
 esac
 
 # final volume
-pacmd dump-volumes \
-    | awk -F= "/Sink $default_sink/ { print \$3 }" \
-    | awk '{ print $4"/"$11}'
-
+if [ -t 0 ]; then
+    pacmd dump-volumes \
+        | awk -F= "/Sink $default_sink/ { print \$3 }" \
+        | awk '{ print $4"/"$11}'
+else
+    pacmd dump-volumes \
+        | awk -F= "/Sink $default_sink/ { print \$3 }" \
+        | awk '{ print $4"/"$11}' \
+        | notify-send-in -t 10 -u low
+fi
