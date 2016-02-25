@@ -3,6 +3,16 @@
 ## script to change volume of pulse-audio via command line
 ## for now only works on default
 
+# If default sink is set in config, make sure it is set. I use a usb-dac so
+# it changes or gets turned off occasionally.
+client_conf="${HOME}/.config/pulse/client.conf"
+if [ -e $client_conf ]; then
+    sink_name=$(grep default-sink $client_conf | cut -d= -f2)
+    if pacmd list-sinks | grep -q $sink_name ; then
+        pacmd set-default-sink $sink_name 2> /dev/null
+    fi
+fi
+
 default_sink=$(pacmd list-sinks | awk '/* index:/ {print $3}')
 
 volume=$(pacmd dump-volumes \
