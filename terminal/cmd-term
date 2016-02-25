@@ -3,23 +3,26 @@
 usage () {
     echo "Usage: `basename $0` [options]"
     echo "Options:"
-    echo "\t-t title"
-    echo "\t-g geometry"
-    echo "\t-b border color"
     echo "\t-f focus window"
+    echo "\t-b border color"
+    echo "\t-g geometry"
+    echo "\t-o opacity"
+    echo "\t-t title"
     echo "\t-h help"
     exit
 }
 
 border=rgb:44/44/44
 title="$@"
+opacity=00
 
-while getopts ft:b:g:h arg; do
+while getopts fb:g:o:t:h arg; do
     case $arg in
-        t) title=$OPTARG; shift; shift;;
-        g) geom=$OPTARG; shift; shift;;
-        b) border="$OPTARG"; shift; shift;;
         f) focus=true; shift;;
+        b) border="$OPTARG"; shift; shift;;
+        g) geom=$OPTARG; shift; shift;;
+        o) opacity="$OPTARG"; shift; shift;;
+        t) title=$OPTARG; shift; shift;;
         h) usage;;
     esac
 done
@@ -39,7 +42,7 @@ if type urxvt
 then
     exec urxvt -fn terminus-16 -name $name -title "$title" \
         -geometry "${geom}" -bl -b 0 -bd "$border" -cr grey \
-        -depth 32 -fg grey -bg '[00]#2d2d2d' \
+        -depth 32 -fg grey -bg "[${opacity}]#2d2d2d" \
         -e $SHELL -c "$@"
 else # terminal lowest common denominator
     exec x-terminal-emulator -fn terminus-16 -name $name -title "$title" \
