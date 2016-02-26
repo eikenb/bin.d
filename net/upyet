@@ -9,6 +9,11 @@ yahoo=206.190.36.45
 google=173.194.33.135
 level3=4.0.0.8
 
+# sound files to use for notifications
+upsound=~/.themes/sounds/itsawak2.wav
+downsound=~/.themes/sounds/thunder.wav
+
+
 # defaults
 IP=$google
 flip=
@@ -100,14 +105,14 @@ if [ "$cmd" = "downyet" ]; then
     done
 
     if [ -n "$flip" ]; then
-        [ -n "$quiet" ] || /usr/bin/play -v $vol -q ~/.themes/sounds/thunder.wav &
+        [ -n "$quiet" ] || /usr/bin/play -v $vol -q $downsound &
         echo "${ERR}-------------------- DOWN --------------------${RST}"
         report
         sleep $delay;
         exec upyet $ARGS
     else
         report
-        [ -n "$quiet" ] || exec /usr/bin/play -v $vol -q ~/.themes/sounds/thunder.wav
+        [ -n "$quiet" ] || exec /usr/bin/play -v $vol -q $downsound
     fi
 else
     ping="$ping -i $interval"
@@ -128,11 +133,11 @@ else
 
         echo "${HIT}-------------------- UP --------------------${RST}"
         if [ -n "$flip" ]; then
-            [ -n "$quiet" ] || /usr/bin/play -v $vol -q ~/.themes/sounds/itsawak2.wav &
+            [ -n "$quiet" ] || /usr/bin/play -v $vol -q  $upsound &
             exec downyet $ARGS
         else
             [ -n "$quiet" ] \
-                || exec /usr/bin/play -v $vol -q ~/.themes/sounds/itsawak2.wav
+                || exec /usr/bin/play -v $vol -q $upsound
         fi
     fi
 fi
