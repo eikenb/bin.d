@@ -17,6 +17,7 @@ downsound=~/.themes/sounds/thunder.wav
 # defaults
 IP=$google
 flip=
+exit_dev=
 simpleping=
 count=1
 interval=1
@@ -33,7 +34,8 @@ usage () {
     echo "-i ping interval"
     echo "-s sleep delay"
     echo "-q quiet (no sounds)"
-    echo '-f flip to upyet when down'
+    echo "-f flip to [up|down]yet when [up|down] changes"
+    echo "-e exit if network device changes"
     if [ "$cmd" = "upyet" ]; then
         echo "-p ping"
         echo "-c N count N times"
@@ -49,13 +51,14 @@ usage () {
     exit 0
 }
 
-while getopts Aaglhm:pfqyi:c:t:s:v: arg; do
+while getopts Aaglhm:pfeqyi:c:t:s:v: arg; do
     case $arg in
         A) adapt=true; shift;;
         p) simpleping=true; [ $count -eq 1 ] && count= ; shift;;
         c) count=$OPTARG; shift; shift;;
         i) interval=$OPTARG; shift; shift;;
         f) flip=true; shift;;
+        e) exit_dev=true; shift;;
         q) quiet=true; shift;;
         m) IP=$OPTARG; shift; shift;;
         v) vol=$OPTARG; shift; shift;;
@@ -83,6 +86,15 @@ report () {
     [ "$1" = "exit" ] && exit
 }
 
+exit_on_dev_change () {
+    if [ -z "$dev" ]; then
+        dev=$(ip link show up | grep -o '\(eth[0-9]\|wlan[0-9]\)')
+    else
+        test=$(ip link show up | grep -o '\(eth[0-9]\|wlan[0-9]\)')
+        [ "$dev" = "$test" ] || { echo "device changed"; sleep 1; exit; }
+    fi
+}
+
 ping='/bin/ping'
 
 if [ "$cmd" = "downyet" ]; then
@@ -102,6 +114,7 @@ if [ "$cmd" = "downyet" ]; then
             echo -n "$out" | grep -o "time=[0-9.]\+"
         fi
         sleep $delay;
+        [ -n "$exit_dev" ] && exit_on_dev_change
     done
 
     if [ -n "$flip" ]; then
@@ -129,6 +142,7 @@ else
         until $ping -q -c $count $IP > /dev/null; do
             sleep $delay;
             echo "${ERR}$(date) -- 100% packet loss${RST}"
+            [ -n "$exit_dev" ] && exit_on_dev_change
         done
 
         echo "${HIT}-------------------- UP --------------------${RST}"
