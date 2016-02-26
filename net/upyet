@@ -4,18 +4,13 @@
 
 # License: CC0 <http://creativecommons.org/publicdomain/zero/1.0/>
 
-# XXX  change to use fping
-
 # Random IPs to test against
 yahoo=206.190.36.45
 google=173.194.33.135
 level3=4.0.0.8
-draal=71.19.157.91
-lyta=45.55.2.73
 
-# default
+# defaults
 IP=$google
-
 flip=
 simpleping=
 count=1
@@ -44,12 +39,12 @@ usage () {
     echo "-y yahoo IP"
     echo "-g google IP (default)"
     echo "-l Level3 IP"
-    echo "-m One of My VPSs"
+    echo "-m HOST - use HOST as ping target"
     echo "-v 1-10 - volume - 10 normal, 1 almost silent"
     exit 0
 }
 
-while getopts Aaglhmpfqyi:c:t:s:v: arg; do
+while getopts Aaglhm:pfqyi:c:t:s:v: arg; do
     case $arg in
         A) adapt=true; shift;;
         p) simpleping=true; [ $count -eq 1 ] && count= ; shift;;
@@ -57,7 +52,7 @@ while getopts Aaglhmpfqyi:c:t:s:v: arg; do
         i) interval=$OPTARG; shift; shift;;
         f) flip=true; shift;;
         q) quiet=true; shift;;
-        m) IP=$lyta; shift;;
+        m) IP=$OPTARG; shift; shift;;
         v) vol=$OPTARG; shift; shift;;
         l) IP=$level3; shift;;
         g) IP=$google; shift;;
