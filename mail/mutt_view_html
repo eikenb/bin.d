@@ -99,11 +99,11 @@ if [ -n "$html_file" ]; then
             count=$(( 1 + $count ))
             sed -i "s/cid:$cid/$fn/g" $html_file
         done
-    fi
-    # base tag screws with local references (not sure how it works with cids)
-    if grep -qi "<base.*href=" $html_file; then
-        grep -vi "<base.*href=" $html_file > $html_file.tmp
-        mv -f $html_file.tmp $html_file
+        # base tag screws with local cid references
+        if grep -qi "<base.*href=" $html_file; then
+            grep -vi "<base.*href=" $html_file > $html_file.tmp
+            mv -f $html_file.tmp $html_file
+        fi
     fi
     # safe mode, strip out remote image references
     if [ "$1" = "safe" ]; then
