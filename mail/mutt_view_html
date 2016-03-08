@@ -40,7 +40,7 @@ mkdir $tmpdir
 cd $tmpdir
 file_info=`munpack -q -t -C $tmpdir $mbox`
 
-#trap 'cleanup' 0
+trap 'cleanup' 0
 cleanup () {
     [ $? -eq 0 ] && sleep 1 # give browser a chance to run
     rm -f $files $mbox
