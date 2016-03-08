@@ -40,7 +40,7 @@ mkdir $tmpdir
 cd $tmpdir
 file_info=`munpack -q -t -C $tmpdir $mbox`
 
-trap 'cleanup' 0
+#trap 'cleanup' 0
 cleanup () {
     [ $? -eq 0 ] && sleep 1 # give browser a chance to run
     rm -f $files $mbox
@@ -100,6 +100,12 @@ if [ -n "$html_file" ]; then
             sed -i "s/cid:$cid/$fn/g" $html_file
         done
     fi
+    # base tag screws with local references (not sure how it works with cids)
+    if grep -qi "<base.*href=" $html_file; then
+        grep -vi "<base.*href=" $html_file > $html_file.tmp
+        mv -f $html_file.tmp $html_file
+    fi
+    # safe mode, strip out remote image references
     if [ "$1" = "safe" ]; then
         grep -qi src=\"http $html_file
         if [ $? -eq 0 ]; then
