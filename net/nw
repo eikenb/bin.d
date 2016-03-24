@@ -21,7 +21,6 @@ status () {
 
 isup () {
     case "$1" in
-        #eth0) test "x$(cat /sys/class/net/eth0/operstate)" = "xup" ;;
         wlan0|eth0) ip link show "$1" | grep -q state\ UP ;;
         *) isup eth0 || isup wlan0 ;;
     esac
@@ -29,6 +28,7 @@ isup () {
 
 down() {
     dev="$1"
+    sudo iwconfig wlan0 power on
     sudo ifdown "$dev" 2> /dev/null
     sudo ifdown --force "$dev" 2> /dev/null
     sudo ip link set "$dev" down
@@ -43,6 +43,7 @@ downup () {
 
 ifup_watch () {
     sudo rfkill unblock wifi # wifi randomly blocked from time to time
+    sudo iwconfig wlan0 power off # power management causes drops
     sudo ifup "$1"
     #sudo ifup --verbose "$1"
     [ "${1%=*}" = "wlan0" ] || return
