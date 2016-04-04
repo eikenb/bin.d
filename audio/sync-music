@@ -11,6 +11,12 @@ short-usage () {
     echo "hd player usb"
 }
 
+# playlists for HD/USB syncs (not player, no room)
+playlists=( ~/.mpd/playlists/goodsongs.m3u
+            ~/.mpd/playlists/angrysongs.m3u
+            ~/.mpd/playlists/chillsongs.m3u )
+# 'player' still hardcoded to goodsongs.m3u below
+
 # take all current songs in playlist, hardlink to a tmp dir and swap dirs
 rm_old () {
     set -e
@@ -25,8 +31,10 @@ rm_old () {
 
     (
         cd $olddir
-        cat ~/.mpd/playlists/goodsongs.m3u | while read f ; do
-            cp --link --parent "$f" "$src/"
+        for playlist in $playlists; do
+            cat $playlist | while read f ; do
+                cp --link --parent "$f" "$src/"
+            done
         done
     )
 
@@ -48,9 +56,10 @@ case "$1" in
         mount | grep "^nfs"
         echo Press Enter to continue Ctrl-C to abort.; read ignore
         set -e
-        rsync -viz --size-only --progress --delete \
-            --files-from ~/.mpd/playlists/goodsongs.m3u \
-            $MOUNT/music /home/jae/shelf/music
+        for playlist in $playlists; do
+            rsync -viz --size-only --progress --delete \
+                --files-from $playlist $MOUNT/music /home/jae/shelf/music
+        done
         rm_old /home/jae/shelf/music
         ;;
     player)
