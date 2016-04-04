@@ -68,6 +68,7 @@ case $cmd in
 esac
 
 # final volume
+echo $sink_name
 if [ -t 0 ]; then
     pacmd dump-volumes \
         | awk -F= "/Sink $default_sink/ { print \$3 }" \
