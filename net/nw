@@ -16,6 +16,7 @@ status () {
     if isup wlan0 ; then
         echo -n "${U}wlan0 up on " && /sbin/iwgetid -r || echo "${D}wlan0 down"
         /sbin/iwconfig wlan0 | grep -o 'Link Quality=[0-9/]\+'
+        /sbin/iwconfig wlan0 | grep -o 'Power Management:o.\+'
     fi
 }
 
