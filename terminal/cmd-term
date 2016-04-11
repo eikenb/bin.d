@@ -43,7 +43,7 @@ if [ -z "$geom" ]; then
         # this will loop through y positions of existing cmd-terms
         # finds gap or appends to end
         for a_y in $(cat ${tmp}); do
-            if [ "$(( $a_y / 50 ))" -gt $num ]; then
+            if [ "$(( $a_y / 42 ))" -gt $num ]; then
                 break
             fi
             num=$(( $num + 1 ))
