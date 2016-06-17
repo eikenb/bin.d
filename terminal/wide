@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# This is almost exclusively for vim diff mode. So 161 wide is for 2 80 column
+# text windows plus an extra column for the dividing line.
+
 height=`xwininfo -id $WINDOWID \
     | grep geometry | awk '{print $2}' \
     | awk -F- '{print $1}' | awk -Fx '{print $2}'`
