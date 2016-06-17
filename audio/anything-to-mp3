@@ -22,7 +22,8 @@ case $iam in
         ;;
     anything-to-wav)
         [ -n "$dst" ] || dst=${1%.*}.wav
-        ffmpeg -i $src -acodec pcm_s16le -ac 2 $dst
+        # set rate '-ar 44100' so waves are right format for CDs
+        ffmpeg -i $src -acodec pcm_s16le -ar 44100 -ac 2 $dst
         ;;
 esac
 
