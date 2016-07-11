@@ -9,7 +9,7 @@ upcase_var () {
     echo -n $VAR | tr "a-z" "A-Z"
     echo -n \"
     echo -n =
-    echo -n \"$VAL\"
+    echo -n \"$(echo $VAL | tr -d '"')\"
 }
 
 if [ $# -eq 1 ]; then
