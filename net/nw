@@ -33,7 +33,6 @@ down() {
     sudo ifdown "$dev" 2> /dev/null
     sudo ifdown --force "$dev" 2> /dev/null
     sudo ip link set "$dev" down
-    sudo pkill dhclient
 }
 
 downup () {
