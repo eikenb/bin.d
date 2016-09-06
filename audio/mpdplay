@@ -3,6 +3,6 @@
 mpc -q || { mpd ~/.mpd/mpd.conf ; sleep 0.3; }
 
 trap 'if mpc | grep -q paused ; then mpc stop; fi' 0
-ncmpc
-#ncmpcpp
+#ncmpc
+ncmpcpp
 #pms
