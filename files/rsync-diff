@@ -39,7 +39,7 @@ fi
 cd $target_home
 
 # this grabs the relevant password from my encrypted password file
-sudopwd=$(catpwd | grep $target | grep $USER | cut -d ' ' -f 3)
+sudopwd=$(greppass "$target.sudo")
 
 # sync local directory over for comparison
 rsync -axHAX --delete --delete-excluded --exclude '*.swp' --exclude '*~' \
