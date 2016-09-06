@@ -77,10 +77,10 @@ scan (){
 
 case $cmd in
 new) newwpa $2 $3 ;;
-proxy|p*) proxy_setup; ifup_watch wlan0 ;;
+proxy|pro*) proxy_setup; ifup_watch wlan0 ;;
 wlan*|roam|r*|up|u*|on) ifup_watch wlan0 ;;
-eth0|e*) downup eth0 ;;
-down|d*|off|of*) { down eth0; down wlan0; } ;;
+eth0|eth) downup eth0 ;;
+down|off|of*) { down eth0; down wlan0; } ;;
 stat|st*) status ;;
 scan|sc*) scan ;;
 *) ifup_watch wlan0=$cmd ;;
