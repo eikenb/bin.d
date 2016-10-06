@@ -46,13 +46,18 @@ if [ -n "$bkgrd" ]; then
     exec 1> $log 2>&1
 fi
 
+biff init
+
 while [ $times -gt 0 ] ; do
     echo "Getting mail..."
     fetchmail 2>&1 | grep --line-buffered -v "^INFO: LOG"
     times=$((${times}-1))
+    biff check
     echo -n "... ($times times left) ... "
     [ $times -gt 0 ] && sleep $intvl
 done
+
+biff fini
 
 echo
 echo ...............done

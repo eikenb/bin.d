@@ -1,0 +1,38 @@
+#!/bin/sh
+
+set -e -u
+
+MAILDIR=~/Mail
+statefile=$MAILDIR/.biff.lastcheck
+
+if [ ! -f "$statefile" ]; then
+    touch $statefile
+fi
+
+command="$1"
+
+case $command in
+    init)
+        touch $statefile
+        ;;
+    check)
+        cd $MAILDIR
+        find . -name inbox -type d | while read inbox; do
+            count=$(find $inbox -newer $statefile -type f | wc -l)
+            if [ $count -gt 0 ]; then
+                msg="${inbox#./}, $count new emails"
+                notify-send -u low -t 4000 "$msg"
+                echo $msg
+            fi
+        done
+        touch $statefile
+        ;;
+    fini)
+        rm -f $statefile
+        ;;
+    *)
+        echo "usage: biff [init|check|done]"
+        ;;
+esac
+
+
