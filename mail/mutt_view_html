@@ -36,7 +36,7 @@
 tmpdir=/tmp/mutthtmltmpdir
 mbox=/tmp/tmpbox
 
-mkdir $tmpdir
+mkdir -p $tmpdir
 cd $tmpdir
 file_info=`munpack -q -t -C $tmpdir $mbox`
 
@@ -79,7 +79,9 @@ files=`echo $files | sed "s/$file_html/$html_file/"`
 if [ -n "$html_file" ]; then
     grep -qi src=\"cid: $html_file
     if [ $? -eq 0 ]; then
+        # tr there because munpack replaces ' ' with 'X'
         filenames=`grep -i content-disposition $mbox \
+            | tr ' ' 'X' \
             | sed -e 's/.*filename="\([^"]\+\)"/\1/'`
         if [ -z $filesnames ]; then
             # unnamed file attachments :P
@@ -87,15 +89,15 @@ if [ -n "$html_file" ]; then
         fi
         # only fix image refereneces
         # include 10 as content-disposition is sometimes long
+        # first sed handles Content-IDs that are too long and put on next line
         cids=`grep -A 10 -i "content-type: image/" $mbox \
-            | grep -i content-id \
-            | sed -e 's/Content-ID: <\([^<>]\+\)>/\1/'`
+            | sed -n -e '/^Content-ID:$/ {N;s|Content-ID:\n|Content-ID: |p;}'\
+            | sed -e 's/Content-ID:\s\+<\([^<>]\+\)>/\1/'`
 
         count=1
         for fn in $filenames; do
             cid=`echo $cids | awk -v count=$count '{ print $count }'`
-            echo $fn $cid
-            #count=`dc -e "1 $count + p"`
+            #echo $fn $cid
             count=$(( 1 + $count ))
             sed -i "s/cid:$cid/$fn/g" $html_file
         done
