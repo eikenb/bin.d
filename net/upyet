@@ -5,9 +5,9 @@
 # License: CC0 <http://creativecommons.org/publicdomain/zero/1.0/>
 
 # Random IPs to test against
-yahoo=$(dig +short yahoo.com | head -1)
-google=$(dig +short google.com | head -1)
-level3=4.0.0.8
+alias google="dig +short google.com | head -1"
+alias yahoo="dig +short yahoo.com | head -1"
+alias level3="echo 4.0.0.8"
 
 # sound files to use for notifications
 upsound=~/.themes/sounds/itsawak2.wav
@@ -15,14 +15,14 @@ downsound=~/.themes/sounds/thunder.wav
 
 
 # defaults
-IP=$google
+IP=
 flip=
 exit_dev=
 simpleping=
 count=1
 interval=1
 timeout=2
-cmd=`basename $0`
+cmd=$(basename $0)
 delay=1
 adapt=
 quiet=
@@ -62,15 +62,16 @@ while getopts Aaglhm:pfeqyi:c:t:s:v: arg; do
         q) quiet=true; shift;;
         m) IP=$OPTARG; shift; shift;;
         v) vol=$OPTARG; shift; shift;;
-        l) IP=$level3; shift;;
-        g) IP=$google; shift;;
-        y) IP=$yahoo; shift;;
+        l) IP=$(level3); shift;;
+        g) IP=$(google); shift;;
+        y) IP=$(yahoo); shift;;
         t|w) timeout=$OPTARG; shift; shift;;
         s|d) delay=$OPTARG; shift; shift;;
         h) usage;;
     esac
 done
 
+[ -n "$IP" ] || IP=$(google)
 vol=$( echo "$vol/10." | bc -l)
 
 # non-flagged arg is IP/host
