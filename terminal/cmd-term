@@ -34,7 +34,7 @@ if [ -z "$geom" ]; then
     if [ "$count" -gt 0 ]; then
         # generate list of y coords of existing cmd-terms
         tmp=$(tempfile)
-        trap "rm -f ${tmp} ${tmp}.tmp" 2 0
+        trap "rm -f ${tmp} ${tmp}.tmp; exit" 2 0
         for id in $(xdotool search --onlyvisible --classname cmd-term); do
             xwininfo -id $id | awk -F+ '/geometry/ {print $2}' >> ${tmp}.tmp
         done
