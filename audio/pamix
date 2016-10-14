@@ -13,7 +13,7 @@ if [ -e $client_conf ]; then
     fi
 fi
 
-default_sink=$(pacmd list-sinks | awk '/* index:/ {print $3}')
+default_sink=$(pacmd list-sinks | awk '/\* index:/ {print $3}')
 
 volume=$(pacmd dump-volumes \
     | awk -F= "/Sink $default_sink/ { print \$3 }" \
