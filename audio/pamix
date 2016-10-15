@@ -7,12 +7,13 @@
 # it changes or gets turned off occasionally.
 client_conf="${HOME}/.config/pulse/client.conf"
 if [ -e $client_conf ]; then
-    sink_name=$(grep default-sink $client_conf | cut -d= -f2)
-    if pacmd list-sinks | grep -q $sink_name ; then
-        pacmd set-default-sink $sink_name 2> /dev/null
+    default_sink_name=$(grep default-sink $client_conf | cut -d= -f2)
+    if pacmd list-sinks | grep -q $default_sink_name ; then
+        pacmd set-default-sink $default_sink_name 2> /dev/null
     fi
 fi
 
+sink_name=$(pacmd stat | awk '/sink name/ { print $4 }')
 default_sink=$(pacmd list-sinks | awk '/\* index:/ {print $3}')
 
 volume=$(pacmd dump-volumes \
