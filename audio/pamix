@@ -3,6 +3,10 @@
 ## script to change volume of pulse-audio via command line
 ## for now only works on default
 
+# this lets it work on systems over ssh
+# XDG_RUNTIME_DIR is usally set by the session manager
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+
 # If default sink is set in config, make sure it is set. I use a usb-dac so
 # it changes or gets turned off occasionally.
 client_conf="${HOME}/.config/pulse/client.conf"
