@@ -6,6 +6,7 @@
 # (27.08.07) Fixed problem detecting html from munpack info
 # (01.10.07) Didn't remove tmp files on error condition.
 # (09.10.07) Replaced 'dc' subshell with shell arithmetic
+# (31.10.16) Fix issue with content-id spanning multiple lines
 
 # Given an html email (either as body or attached as multi-part) it will unpack
 # the html and all the attachments. It rewrites the Content-ID resource
@@ -91,13 +92,15 @@ if [ -n "$html_file" ]; then
         # include 10 as content-disposition is sometimes long
         # first sed handles Content-IDs that are too long and put on next line
         cids=`grep -A 10 -i "content-type: image/" $mbox \
-            | sed -n -e '/^Content-ID:$/ {N;s|Content-ID:\n|Content-ID: |p;}'\
+            | sed -e '/^Content-ID:$/ {N;s|Content-ID:\n|Content-ID: |;}'\
+            | grep Content-ID \
             | sed -e 's/Content-ID:\s\+<\([^<>]\+\)>/\1/'`
+        echo $cids
 
         count=1
         for fn in $filenames; do
             cid=`echo $cids | awk -v count=$count '{ print $count }'`
-            #echo $fn $cid
+            echo $fn $cid
             count=$(( 1 + $count ))
             sed -i "s/cid:$cid/$fn/g" $html_file
         done
