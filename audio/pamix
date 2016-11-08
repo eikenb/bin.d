@@ -59,8 +59,10 @@ floor () { vol="${1%*%}"; chg="$2"
 
 # strip off number if it was right against modifier (eg. +10)
 cmd=$(echo "$1" | sed 's/[0-9]\+//g')
-
-case $cmd in
+case "$cmd" in
+    -h|-?)
+        usage
+        ;;
     [+]*|u*)
         change=$(ceil $volume $change)
         pactl -- set-sink-volume ${default_sink} +${change}%
@@ -69,7 +71,6 @@ case $cmd in
         change=$(floor $volume $change)
         pactl -- set-sink-volume ${default_sink} -${change}%
         ;;
-    -h|-?) usage ;;
 esac
 
 # final volume
