@@ -34,6 +34,8 @@ bkgrd="$3"
 [ -d "$TMPDIR" ] || TMPDIR="/tmp"
 [ -d "$TMP" ] && TMPDIR=$TMP
 
+umask 077
+
 lock=$TMPDIR/fetchmail-loop.lock
 lockfile -r0 $lock || exit 1
 trap "rm -f $lock" 0
