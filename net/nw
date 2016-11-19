@@ -33,6 +33,7 @@ down() {
     sudo ifdown "$dev" 2> /dev/null
     sudo ifdown --force "$dev" 2> /dev/null
     sudo ip link set "$dev" down
+    sudo rfkill block wifi # turn off when not in use
 }
 
 downup () {
@@ -42,7 +43,7 @@ downup () {
 }
 
 ifup_watch () {
-    sudo rfkill unblock wifi # wifi randomly blocked from time to time
+    sudo rfkill unblock wifi # enable wifi
     sudo iwconfig wlan0 power off # power management causes drops
     sudo ifup "$1"
     #sudo ifup --verbose "$1"
