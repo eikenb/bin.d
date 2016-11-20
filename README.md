@@ -10,3 +10,4 @@ path.
 - mail  - mutt and spam filter related
 - net   - wifi connecting and pinging
 - terminal - various handy terminal scripts
+- hardware - control aspects of some hardware

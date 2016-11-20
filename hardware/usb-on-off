@@ -1,0 +1,57 @@
+#!/bin/sh
+
+"
+Program to enable/disable USB devices based on their vendor/product ids.
+
+E.g. use; you want to keep your webcam/mic disabled unless you need it.
+"
+
+set -e
+
+usage(){
+    [ -n "$1" ] && echo $1
+    echo "Usage: $(basename $0) [VendorID]:[ProductID] [on|off]"
+    exit 1
+}
+
+# Params
+echo "$1" | grep -q "[a-z0-9]\{4\}:[a-z0-9]\{4\}" || usage "Bad ID arg"
+if [ "$#" -eq 2 ]; then
+    echo "$2" | grep -q "^on$\|^off$\|^stat" || usage "Use 'on' or 'off'"
+fi
+
+IDS="$1" # format vendorid:productid
+VID="${IDS%:*}"
+PID="${IDS#*:}"
+
+# On/Off
+param="$2"
+
+# constants
+sysfs="/sys/bus/usb/devices"
+togglefile="bConfigurationValue"
+alias vendor_files="grep $VID ${sysfs}/*/idVendor"
+
+# loop through matching vendor files and act on matching product-ids
+for dev in $(vendor_files); do
+    basepath=${dev%/*}
+    if [ "$(cat $basepath/idProduct)" = "$PID" ]; then
+        current="$(cat $basepath/$togglefile)"
+        if [ -n "$param" ]; then
+            [ "$param" = "off" ] && onoff=0
+            [ "$param" = "on" ] && onoff=1
+            [ "$onoff" -eq 2 ] && usage
+            if [ -z "$current" ] || [ "$current" -ne "$onoff" ]; then
+                sudo sh -c "printf $onoff > $basepath/$togglefile"
+                current="$onoff"
+            fi
+        fi
+        #echo $basepath/$togglefile
+        if [ -n "$current" ] && [ "$current" -eq 1 ]; then
+            printf "Device is enabled\n"
+        else
+            printf "Device is disabled\n"
+        fi
+    fi
+done
+
