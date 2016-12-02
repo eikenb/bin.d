@@ -39,6 +39,7 @@ if [ -z "$geom" ]; then
             xwininfo -id $id | awk -F+ '/geometry/ {print $2}' >> ${tmp}.tmp
         done
         sort -n ${tmp}.tmp > ${tmp}
+        rm -f ${tmp}.tmp
 
         # this will loop through y positions of existing cmd-terms
         # finds gap or appends to end
@@ -48,6 +49,7 @@ if [ -z "$geom" ]; then
             fi
             num=$(( $num + 1 ))
         done
+        rm -f ${tmp}
     fi
 
     y=$(( $num * 50 ))
