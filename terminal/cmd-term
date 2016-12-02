@@ -34,12 +34,11 @@ if [ -z "$geom" ]; then
     if [ "$count" -gt 0 ]; then
         # generate list of y coords of existing cmd-terms
         tmp=$(tempfile)
-        trap "rm -f ${tmp} ${tmp}.tmp; exit" 2 0
+        trap "rm -f ${tmp}; exit" 2 0
         for id in $(xdotool search --onlyvisible --classname cmd-term); do
-            xwininfo -id $id | awk -F+ '/geometry/ {print $2}' >> ${tmp}.tmp
+            xwininfo -id $id | awk -F+ '/geometry/ {print $2}' >> ${tmp}
         done
-        sort -n ${tmp}.tmp > ${tmp}
-        rm -f ${tmp}.tmp
+        sort -n -o ${tmp} ${tmp}
 
         # this will loop through y positions of existing cmd-terms
         # finds gap or appends to end
@@ -49,7 +48,7 @@ if [ -z "$geom" ]; then
             fi
             num=$(( $num + 1 ))
         done
-        rm -f ${tmp}
+        rm -f ${tmp} # trap doesn't seem to work reliably
     fi
 
     y=$(( $num * 50 ))
