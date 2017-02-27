@@ -9,7 +9,7 @@ dst="$2"
 case $iam in
     anything-to-mp3)
         [ -n "$dst" ] || dst=${1%.*}.mp3
-        ffmpeg -i $src -acodec libmp3lame -aq 1 $dst
+        ffmpeg -i $src -acodec libmp3lame -aq 2 $dst
 
         # use -to hh:mm:ss to cut the end of the audio
         # eg. cut it off at 4 minutes 7 seconds
