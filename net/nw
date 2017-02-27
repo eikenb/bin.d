@@ -69,6 +69,7 @@ proxy_setup () {
 }
 
 scan (){
+    sudo rfkill unblock wifi # enable wifi
     if ! isup wlan0 ; then
         sudo ip link set wlan0 up
         trap 'sudo ip link set wlan0 down' 0
