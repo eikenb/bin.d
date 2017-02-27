@@ -1,0 +1,50 @@
+#!/bin/sh
+
+cmd=`basename $0`
+
+usage () {
+    echo "$cmd /src/ /dest/src [excludes-file-or-pattern]"
+    echo "    slash^          ^no slash"
+    if [ -n "$src" ] ; then
+        echo "Your command..."
+        echo "$cmd $src $dest $excl"
+    fi
+    exit 1
+}
+
+[ $# -gt 1 ] || usage
+
+src=$1 shift
+dest=$1 shift
+
+# wildcard excludes pass in like; e.g, \*\*.pyc or "\\*\\*.pyc"
+excl= # for usage message
+excludes=
+while [ -n "$1" ]; do
+    excl="$excl $1"
+    [ -e "$1" ] && excludes="--exclude-from=$1 $excludes"\
+        || excludes="--exclude=$1 $excludes"
+    shift
+done
+
+# can't set to here due to the way we process excludes above
+set -u
+
+case $src in
+    /) ;; /*/) ;; *:/) ;; *:/*/) ;; *)   echo "*** Bad src argument"; usage ;;
+esac
+#    /) ;; /*/) ;; *:/) ;; *:/*/) ;; *)   echo "*** Bad src argument"; usage ;;
+
+case $dest in
+    /*[!/])  ;; *)   echo "*** Bad dest argument"; usage ;;
+esac
+
+echo mirror running
+/usr/bin/rsync -axHAX --delete --delete-excluded --numeric-ids \
+    $excludes$src $dest
+echo mirror done
+# -P when testing
+# -S makes it VERY slow and -H is reported to make it slow
+# Don't use either unless you know they are necessary.
+# -A leave off as I don't use acls
+
