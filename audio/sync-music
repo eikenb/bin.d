@@ -68,7 +68,7 @@ case "$1" in
         mount | grep "$MOUNT"
         echo Press Enter to continue Ctrl-C to abort.; read ignore
         PLAYLIST=${HOME}/.mpd/playlists/goodsongs.m3u
-        DEST=$MOUNT/MUSIC/playlist
+        DEST=$MOUNT/playlist
         cp $PLAYLIST $DEST
         #sed -i 's/4a$/p3/g' $DEST/goodsongs.m3u 2> /dev/null
         rsync -viz --progress --size-only --delete \
