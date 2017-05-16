@@ -25,6 +25,9 @@ case $iam in
         # set rate '-ar 44100' so waves are right format for CDs
         ffmpeg -i $src -acodec pcm_s16le -ar 44100 -ac 2 $dst
         ;;
+    anything-to-ogg)
+        [ -n "$dst" ] || dst=${1%.*}.ogg
+        ffmpeg -i $src -acodec libvorbis -q:a 6.6 $dst
 esac
 
 
