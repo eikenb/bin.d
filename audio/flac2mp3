@@ -14,6 +14,7 @@ if [ $# -eq 1 ]; then
         eval `metaflac --export-tags-to=- "$src" | sed 's/=\(.*\)/="\1"/'`
         id3v2 -A "$ALBUM" -y "$DATE" -g "$GENRE" -a "$ARTIST" \
             -t "$TITLE" -T "$TRACKNUMBER" "$dst"
+        replaygain -f $dst
     else
         echo "Input file ($1) was not a .flac."
     fi
