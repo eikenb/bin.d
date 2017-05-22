@@ -52,14 +52,12 @@ ifup_watch () {
     done ; { echo -n ' connected to '; /sbin/iwgetid -r ;} | hl '.*'
 }
 
-newwpa () {
+wpa () {
     [ -n "$1" -a -n "$2" ] || { echo "missing ssid/psk args"; exit 1; }
     ssid="$1"; psk="$2"
-    origin=$(pwd)
-    cd ~/projects/scripts/machines/neroon/etc/wpa_supplicant
-    echo "network={\n\tssid=\"${ssid}\"\n\tpsk=\"${psk}\"\n}" >> \
-        wpa_supplicant.conf
-    fab push:wpa_supplicant.conf
+    sudo sh -c \
+        "wpa_passphrase $ssid $psk >> /etc/wpa_supplicant/wpa_supplicant.conf"
+    ifup_watch wlan0
 }
 
 proxy_setup () {
