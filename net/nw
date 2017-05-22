@@ -29,16 +29,15 @@ isup () {
 
 down() {
     dev="$1"
-    sudo iwconfig wlan0 power on
     sudo ifdown "$dev" 2> /dev/null
     sudo ifdown --force "$dev" 2> /dev/null
     sudo ip link set "$dev" down
+    sudo iwconfig wlan0 power on
     sudo rfkill block wifi # turn off when not in use
 }
 
 downup () {
     down wlan0 2> /dev/null
-    down eth0 2> /dev/null
     ifup_watch "$1"
 }
 
@@ -78,11 +77,10 @@ scan (){
 }
 
 case $cmd in
-new) newwpa $2 $3 ;;
+wpa) wpa $2 $3 ;;
 proxy|pro*) proxy_setup; ifup_watch wlan0 ;;
 wlan*|roam|r*|up|u*|on) ifup_watch wlan0 ;;
-eth0|eth) downup eth0 ;;
-down|off|of*) { down eth0; down wlan0; } ;;
+down|off|of*) { down wlan0; } ;;
 stat|st*) status ;;
 scan|sc*) scan ;;
 *) ifup_watch wlan0=$cmd ;;
