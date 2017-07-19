@@ -7,16 +7,6 @@
 # XDG_RUNTIME_DIR is usally set by the session manager
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
 
-# If default sink is set in config, make sure it is set. I use a usb-dac so
-# it changes or gets turned off occasionally.
-client_conf="${HOME}/.config/pulse/client.conf"
-if [ -e $client_conf ]; then
-    default_sink_name=$(grep default-sink $client_conf | cut -d= -f2)
-    if pacmd list-sinks | grep -q $default_sink_name ; then
-        pacmd set-default-sink $default_sink_name 2> /dev/null
-    fi
-fi
-
 sink_name=$(pacmd stat | awk '/sink name/ { print $4 }')
 default_sink=$(pacmd list-sinks | awk '/\* index:/ {print $3}')
 
@@ -74,8 +64,8 @@ case "$cmd" in
 esac
 
 # final volume
-echo $sink_name
 if [ -t 0 ]; then
+    echo $sink_name
     pacmd dump-volumes \
         | awk -F= "/Sink $default_sink/ { print \$3 }" \
         | awk '{ print $4"/"$11}'
