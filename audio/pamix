@@ -73,5 +73,5 @@ else
     pacmd dump-volumes \
         | awk -F= "/Sink $default_sink/ { print \$3 }" \
         | awk '{ print $4"/"$11}' \
-        | notify-send-in -t 10 -u low
+        | notify-send -t 10 -u low $(cat)
 fi
