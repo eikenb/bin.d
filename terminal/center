@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# center window horizontallly
+# use xdotool so I can bind it using xbindkeys
+
+wm_border_width=3
+
+[ -n "$WINDOWID" ] || WINDOWID=$(xdotool getwindowfocus)
+
+win_width=$(xwininfo -id $WINDOWID | grep Width | awk '{print $2}')
+rt_width=$(xwininfo -root | grep Width | awk '{print $2}')
+x=$(( ($rt_width - $win_width) / 2 ))
+
+y=$(xwininfo -id $WINDOWID | grep 'Absolute upper-left Y' | awk '{print $4}')
+y=$(($y - $wm_border_width))
+xdotool windowmove $WINDOWID $x $y
