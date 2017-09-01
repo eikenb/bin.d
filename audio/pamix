@@ -47,6 +47,33 @@ floor () { vol="${1%*%}"; chg="$2"
     [ $newvol -lt 0 ] && echo $(( $chg + $newvol )) || echo $chg
 }
 
+show_vol() {
+    # final volume
+    out=$(pacmd dump-volumes \
+            | awk -F= "/Sink $default_sink/ { print \$3 }" \
+            | awk '{ print $4"/"$11}')
+    if [ -t 0 ]; then
+        echo $sink_name
+        echo $out
+    else
+        notify-send -t 10 -u low ${out}
+    fi
+}
+
+show_mute(){
+    if pacmd list-sinks | awk '/* index/,/muted/' | grep -q 'muted: yes'
+    then
+        status="Sound Muted"
+    else
+        status="Sound Un-muted"
+    fi
+    if [ -t 0 ]; then
+        echo $status
+    else
+        notify-send -t 10 -u low ${status}
+    fi
+}
+
 # strip off number if it was right against modifier (eg. +10)
 cmd=$(echo "$1" | sed 's/[0-9]\+//g')
 case "$cmd" in
@@ -55,23 +82,18 @@ case "$cmd" in
         ;;
     [+]*|u*)
         change=$(ceil $volume $change)
-        pactl -- set-sink-volume ${default_sink} +${change}%
+        pactl -- set-sink-volume @DEFAULT_SINK@ +${change}%
+        show_vol
         ;;
     [-]*|d*)
         change=$(floor $volume $change)
-        pactl -- set-sink-volume ${default_sink} -${change}%
+        pactl -- set-sink-volume @DEFAULT_SINK@ -${change}%
+        show_vol
+        ;;
+    mute|m*)
+        pactl -- set-sink-mute @DEFAULT_SINK@ toggle
+        show_mute
         ;;
 esac
 
-# final volume
-if [ -t 0 ]; then
-    echo $sink_name
-    pacmd dump-volumes \
-        | awk -F= "/Sink $default_sink/ { print \$3 }" \
-        | awk '{ print $4"/"$11}'
-else
-    pacmd dump-volumes \
-        | awk -F= "/Sink $default_sink/ { print \$3 }" \
-        | awk '{ print $4"/"$11}' \
-        | notify-send -t 10 -u low $(cat)
-fi
+
