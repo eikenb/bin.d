@@ -28,7 +28,7 @@ case $iam in
         ;;
     anything-to-ogg)
         [ -n "$dst" ] || dst="${1%.*}.ogg"
-        ffmpeg -i "$src" -acodec libvorbis -q:a 6.6 "$dst"
+        ffmpeg -i "$src" -vn -c:a libvorbis -q:a 6.6 "$dst"
         vorbisgain "$dst"
 esac
 
