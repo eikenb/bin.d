@@ -105,7 +105,7 @@ if [ "$cmd" = "downyet" ]; then
     totalmiss=0
     until [ $miss -ge 3 ]; do
         total=$(($total + 1))
-        if ! out=$($ping -W $timeout -c $count $IP); then
+        if ! out=$($ping -n -W $timeout -c $count $IP); then
             miss=$(($miss + 1))
             totalmiss=$(($totalmiss + 1))
             echo "${ERR}"`date`"${RST}";
@@ -140,7 +140,7 @@ else
             $ping $IP
         fi
     else
-        until $ping -q -c $count $IP > /dev/null; do
+        until $ping -q -n -c $count $IP > /dev/null; do
             sleep $delay;
             echo "${ERR}$(date) -- 100% packet loss${RST}"
             [ -n "$exit_dev" ] && exit_on_dev_change
