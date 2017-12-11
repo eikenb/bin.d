@@ -65,10 +65,10 @@ then
     exec urxvt -fn terminus-16 -name $name -title "$title" \
         -geometry "${geom}" -bl -b 0 -bd "$border" -cr grey \
         -depth 32 -fg grey -bg "[${opacity}]#2d2d2d" \
-        -e $SHELL -c "$@"
+        -e $SHELL -c "$@" &
 else # terminal lowest common denominator
     exec x-terminal-emulator -fn terminus-16 -name $name -title "$title" \
         -geometry "${geom}" -b 1 -cr grey \
-        -e $SHELL -c "$@"
+        -e $SHELL -c "$@" &
 fi
 
