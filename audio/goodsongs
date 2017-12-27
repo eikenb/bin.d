@@ -18,6 +18,7 @@ usage: $program [option]
 
   options:
         None              append playing song to list
+        Filename          append file to playlist
         -h, --help        display this
         -d, --delete      remove from playlist
         -b, --build       build a playlist from your list, play it
@@ -60,7 +61,7 @@ mpdParam() {
   local param mpdconf="$(locateMPDConf)"
 
   param="$(awk "/$1/"'{print $2}' "$mpdconf" | tr -d \")" # find param
-  param=$HOME/${param#\~/}                                # translate ~
+  eval param="$param"                                     # expand ~
 
   echo "$param"
 }
@@ -125,6 +126,14 @@ build_playlist() {
 }
 
 # add current song to the list
+add_file_to_list() {
+  local filepath="$(readlink -f $1)"
+  [ -e "$filepath" ] || usage
+  local mdir="$(mpdParam '^music_directory')/"
+  song="${filepath#$mdir}"
+  _add_song $song
+}
+
 add_to_list() {
   local song li
   # is mpd playing?
@@ -132,10 +141,15 @@ add_to_list() {
 
   # get song filename
   song="$(mpc --format %file% | head -n 1)"
+  _add_song $song
+}
 
+_add_song() {
+  local song="$1"
   # add it -- prevent dupes
   grep -Fqx "$song" "$list" || echo "$song" >> "$list"
 
+  mpc add "$song"
   # notify user of event if possible
   song=`basename "$song"`
   li=`basename "$list"`
@@ -215,6 +229,7 @@ run() {
       -P|--print)  printlist               ;;
       -s|--show)   show_one                ;;
       -S|--smart)  smart_play              ;;
+      *) add_file_to_list "$@"         ;;
     esac
   done
 }
