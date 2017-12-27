@@ -44,7 +44,7 @@ trap "exit" 2
 log=$TMPDIR/fetchmail.out
 if [ -n "$bkgrd" ]; then
     echo -n > $log
-    chmod 700 $log
+    chmod 600 $log
     exec 1> $log 2>&1
 fi
 
