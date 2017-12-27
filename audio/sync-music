@@ -56,7 +56,9 @@ case "$1" in
         mount | grep "^nfs"
         echo Press Enter to continue Ctrl-C to abort.; read ignore
         set -e
-        for playlist in $playlists; do
+        for playlist in $playlists
+        do
+            echo "Syncing $playlist"
             rsync -viz --size-only --progress --delete \
                 --files-from $playlist $MOUNT/music /home/jae/shelf/music
         done
@@ -67,23 +69,16 @@ case "$1" in
         echo "Verify mount: ($MOUNT)"
         mount | grep "$MOUNT"
         echo Press Enter to continue Ctrl-C to abort.; read ignore
-        PLAYLIST=${HOME}/.mpd/playlists/goodsongs.m3u
-        DEST=$MOUNT/playlist
-        cp $PLAYLIST $DEST
-        #sed -i 's/4a$/p3/g' $DEST/goodsongs.m3u 2> /dev/null
-        rsync -viz --progress --size-only --delete \
-            --delete-before \
-            --files-from $DEST/goodsongs.m3u \
-            /share/public/music $DEST/
-        sed -i 's/\//\\/g' $DEST/goodsongs.m3u 2> /dev/null
-        # eliminate old songs
-        ${HOME}/.mpd/sort-good
-        cwd=`pwd`
-        cd $DEST/
-        find artists mixed -type f | while read f ;
-            do look "$f" $PLAYLIST > /dev/null || echo -n "$f\0" ;
-        done | xargs -0 -r rm
-        cd $cwd
+        for playlist in $playlists
+        do
+            echo "Syncing $playlist"
+            DEST=$MOUNT/playlist
+            cp $playlist $DEST
+            rsync -viz --progress --size-only --delete \
+                --delete-before \
+                --files-from $playlist /share/public/music $DEST/
+            sed -i 's/\//\\/g' $DEST/$playlist 2> /dev/null
+        done
         ;;
     list) short-usage ;;
     *) usage ;;
