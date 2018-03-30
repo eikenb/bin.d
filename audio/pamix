@@ -16,7 +16,7 @@ volume=$(pacmd dump-volumes \
 
 usage() {
     [ -n "$1" ] && echo "$1"
-    echo "Usage: $(basename $0) [command] [percent-change]"
+    echo "Usage: $(basename $0) [command] [percent]"
     echo "Commands:"
     echo "\t+/up       volume up"
     echo "\t-/down     volume down"
@@ -74,11 +74,13 @@ show_mute(){
     fi
 }
 
-# strip off number if it was right against modifier (eg. +10)
-cmd=$(echo "$1" | sed 's/[0-9]\+//g')
-case "$cmd" in
-    -h|-?)
+case "$1" in
+    -h|--help)
         usage
+        ;;
+    [0-9]*)
+        pactl -- set-sink-volume @DEFAULT_SINK@ ${change}%
+        show_vol
         ;;
     [+]*|u*)
         change=$(ceil $volume $change)
@@ -93,6 +95,9 @@ case "$cmd" in
     mute|m*)
         pactl -- set-sink-mute @DEFAULT_SINK@ toggle
         show_mute
+        ;;
+    *)
+        show_vol
         ;;
 esac
 
