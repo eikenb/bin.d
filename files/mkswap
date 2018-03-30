@@ -45,6 +45,6 @@ mkswap ${swapfile}
 swapon ${swapfile}
 
 # reminder about fstab
-echo "Add this to /etc/fstab"
+echo "Add this to /etc/fstab if needed."
 echo "# swap file created on" $(date +"%F")
 echo "$swapfile none    swap    sw      0       0"
