@@ -20,6 +20,7 @@ playlists=( ~/.mpd/playlists/goodsongs.m3u
 # take all current songs in playlist, hardlink to a tmp dir and swap dirs
 rm_old () {
     set -e
+    setopt extendedglob
     src=$1
     [ -d "$src" ] || { echo "Missing source directory"; usage; exit 1; }
 
@@ -27,7 +28,8 @@ rm_old () {
     [ -d "$olddir" ] && { echo "$olddir alredy exists!"; exit 1 }
     mkdir $olddir
 
-    mv $src/artists $src/mixed $olddir/
+    # "^old" means not-old or all-but-old in zsh
+    mv $src/^old $olddir/
 
     (
         cd $olddir
