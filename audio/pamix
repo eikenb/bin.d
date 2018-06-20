@@ -50,7 +50,7 @@ floor () { vol="${1%*%}"; chg="$2"
 show_vol() {
     # final volume
     out=$(pacmd dump-volumes \
-            | awk -F= "/Sink $default_sink/ { print \$3 }" \
+            | awk -F= "/Sink $default_sink/ { print \$2 }" \
             | awk '{ print $4"/"$11}')
     if [ -t 0 ]; then
         echo $sink_name
