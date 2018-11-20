@@ -5,7 +5,7 @@ usage () {
     echo "COMMANDs:"
     echo "usb    - sync all music to usb drive (/media/data)"
     echo "hd     - sync goodlist playlist songs to local drive."
-    echo "player - sync goodlist playlist songs to Sansa."
+    echo "player - sync goodlist playlist songs to FiiO."
 }
 short-usage () {
     echo "hd player usb"
