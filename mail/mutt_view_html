@@ -43,7 +43,7 @@ file_info=`munpack -q -t -C $tmpdir $mbox`
 
 trap 'cleanup' 0
 cleanup () {
-    [ $? -eq 0 ] && sleep 2 # give browser a chance to run
+    [ $? -eq 0 ] && sleep 3 # give browser a chance to run
     rm -f $files $mbox
     [ -d $tmpdir ] && rmdir $tmpdir
 }
