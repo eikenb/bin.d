@@ -56,7 +56,7 @@ show_vol() {
         echo $sink_name
         echo $out
     else
-        notify-send -t 10 -u low ${out}
+        notify-send -t 2000 -u low ${out}
     fi
 }
 
@@ -70,7 +70,7 @@ show_mute(){
     if [ -t 0 ]; then
         echo $status
     else
-        notify-send -t 10 -u low ${status}
+        notify-send -t 2000 -u low ${status}
     fi
 }
 
