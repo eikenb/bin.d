@@ -1,6 +1,5 @@
 #!/bin/sh
 # duplicate urxvt terminal with same geometry
 
-geometry=`xwininfo -id $WINDOWID \
-    | grep geometry | awk '{print $2}'`
+geometry=$(stty size | awk '{print $2"x"$1}')
 urxvtc -geometry $geometry

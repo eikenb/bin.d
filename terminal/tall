@@ -1,11 +1,8 @@
 #!/bin/sh
 
-dimensions=`xwininfo -id $WINDOWID \
-    | grep geometry | awk '{print $2}'`
-dimensions=${dimensions%%[+-]*}
-
-width=${dimensions%x*}
-height=${dimensions#*x}
+dim=$(stty size)
+width=${dim##* }
+height=${dim%% *}
 
 cmd=`basename $0`
 chg=12
