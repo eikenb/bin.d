@@ -6,11 +6,12 @@ height=${dim%% *}
 
 cmd=`basename $0`
 chg=12
-[ -n "$1" ] && chg="$1"
-if [ $cmd = "short" ] ; then 
-    height=$(( $height-$chg ))
+mult=1
+[ -n "$1" ] && mult="$1"
+if [ $cmd = "short" ] ; then
+    height=$(( $height-$chg*$mult ))
 else
-    height=$(( $height+$chg ))
+    height=$(( $height+$chg*$mult ))
 fi
 
 /usr/bin/xtermset -geom ${width}x${height}
