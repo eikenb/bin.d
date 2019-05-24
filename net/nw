@@ -1,5 +1,39 @@
 #!/bin/sh
 
+usage() {
+    cat << EOF
+Usage: $(basename $0) [OPTS] COMMAND
+Opts:
+    -h    - usage info
+    -w    - wifi interface (wlan0, etc; see 'ip addr' output)
+    -s    - new ssid (for wpa command only)
+    -p    - new psk  (for wpa command only)
+Commands: -
+    up    - bring wifi up
+    down  - take wifi down
+    stat  - status info
+    scan  - output scan of wifi APs
+    ssids - list of local SSIDs
+    wpa   - new wpa_supplicant entry
+EOF
+    exit 1
+}
+
+# default wifi device
+# iwlwifi
+#WLAN=wlan0
+# ath9k
+WLAN=wlx98ded0094277
+
+while getopts hs:p:w: arg ; do
+    case $arg in
+        h) usage ;;
+        s) SSID="$OPTARG" ; shift 2 ;;
+        p) PSK="$OPTARG" ; shift 2 ;;
+        w) WLAN="$OPTARG" ; shift 2 ;;
+    esac
+done
+
 cmd="$1"
 
 ifaces () {
@@ -13,17 +47,17 @@ D="\033[0;31m"
 U="\033[1;32m"
 status () {
     isup eth0 && echo "${U}eth0 up" || echo "${D}eth0 down"
-    if isup wlan0 ; then
-        echo -n "${U}wlan0 up on " && /sbin/iwgetid -r || echo "${D}wlan0 down"
-        /sbin/iwconfig wlan0 | grep -o 'Link Quality=[0-9/]\+'
-        /sbin/iwconfig wlan0 | grep -o 'Power Management:o.\+'
+    if isup $WLAN ; then
+        echo -n "${U}$WLAN up on " && /sbin/iwgetid -r || echo "${D}$WLAN down"
+        /sbin/iwconfig $WLAN | grep -o 'Link Quality=[0-9/]\+'
+        /sbin/iwconfig $WLAN | grep -o 'Power Management:o.\+'
     fi
 }
 
 isup () {
     case "$1" in
-        wlan0|eth0) ip link show "$1" | grep -q state\ UP ;;
-        *) isup eth0 || isup wlan0 ;;
+        w*|eth0) ip link show "$1" | grep -q state\ UP ;;
+        *) isup eth0 || isup $WLAN ;;
     esac
 }
 
@@ -32,32 +66,31 @@ down() {
     sudo ifdown "$dev" 2> /dev/null
     sudo ifdown --force "$dev" 2> /dev/null
     sudo ip link set "$dev" down
-    sudo iwconfig wlan0 power on
+    sudo iwconfig $WLAN power on
     sudo rfkill block wifi # turn off when not in use
 }
 
 downup () {
-    down wlan0 2> /dev/null
+    down $WLAN 2> /dev/null
     ifup_watch "$1"
 }
 
 ifup_watch () {
     sudo rfkill unblock wifi # enable wifi
-    sudo iwconfig wlan0 power off # power management causes drops
+    sudo iwconfig $WLAN power off 2> /dev/null # power management causes drops
     sudo ifup "$1"
     #sudo ifup --verbose "$1"
-    [ "${1%=*}" = "wlan0" ] || return
+    [ "${1%=*}" = "$WLAN" ] || return
     while ! /sbin/iwgetid > /dev/null ; do
         echo -n . ; sleep 1
     done ; { echo -n ' connected to '; /sbin/iwgetid -r ;} | hl '.*'
 }
 
 wpa () {
-    [ -n "$1" -a -n "$2" ] || { echo "missing ssid/psk args"; exit 1; }
-    ssid="$1"; psk="$2"
+    [ -z "$SSID" -o -z "$PSK" ] || { echo "missing ssid/psk args"; exit 1; }
     sudo sh -c \
-        "wpa_passphrase $ssid $psk >> /etc/wpa_supplicant/wpa_supplicant.conf"
-    ifup_watch wlan0
+        "wpa_passphrase $SSID $PSK >> /etc/wpa_supplicant/wpa_supplicant.conf"
+    ifup_watch $WLAN
 }
 
 proxy_setup () {
@@ -66,21 +99,21 @@ proxy_setup () {
 }
 
 scan (){
-    sudo rfkill unblock wifi # enable wifi
-    if ! isup wlan0 ; then
-        sudo ip link set wlan0 up
-        trap 'sudo ip link set wlan0 down' 0
+    if ! isup $WLAN ; then
+        sudo rfkill unblock wifi # enable wifi
+        sudo ip link set $WLAN up
+        trap 'sudo ip link set $WLAN down' 0
     fi
-    sudo iwlist wlan0 scan
+    sudo iwlist $WLAN scan
 }
 
 case $cmd in
 wpa) wpa $2 $3 ;;
-proxy|pro*) proxy_setup; ifup_watch wlan0 ;;
-wlan*|roam|r*|up|u*|on) ifup_watch wlan0 ;;
-down|off|of*) { down wlan0; } ;;
+proxy|pro*) proxy_setup; ifup_watch $WLAN ;;
+wlan*|roam|r*|up|u*|on) ifup_watch $WLAN ;;
+down|off|of*) { down $WLAN; } ;;
 stat|st*) status ;;
 scan|sc*) scan ;;
-*) ifup_watch wlan0=$cmd ;;
+*) usage ;;
 esac
 
