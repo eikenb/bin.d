@@ -2,6 +2,11 @@
 
 # highlights patterns of text
 
+# Alternatives using other commands:
+# grep -z "pattern" - the -z changes line handling and outputs all
+# grep "pattern\|"  - the "\|" means 'or nothing'
+# less -p "pattern" - does this with less
+
 # color-num can be 0-15, 0-87, 0-255 depending on your terminal
 
 usage () {
