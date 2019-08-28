@@ -27,9 +27,12 @@ case $iam in
         ffmpeg -i "$src" -acodec pcm_s16le -ar 44100 -ac 2 "$dst"
         ;;
     anything-to-ogg)
-        [ -n "$dst" ] || dst="${1%.*}.ogg"
-        ffmpeg -i "$src" -vn -c:a libvorbis -q:a 6.6 "$dst"
-        vorbisgain "$dst"
+        if ! webm-to-ogg "$src"
+        then
+            [ -n "$dst" ] || dst="${1%.*}.ogg"
+            ffmpeg -i "$src" -vn -c:a libvorbis -q:a 6.6 "$dst"
+            vorbisgain "$dst"
+        fi
 esac
 
 

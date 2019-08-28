@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# webm sometimes wraps audio as vorbis
+# this re-wraps the audio in ogg without transpiling it again
+
+orig="$1"
+dest="$(basename $(echo "$orig"| tr ' ' '_') .webm).ogg"
+
+# not vorbis, skip
+if ! mediainfo "$orig" | tr -d ' ' | grep -qi "format:vorbis"
+then
+    echo "$(basename $0): not vorbis"
+    exit 1
+fi
+
+ffmpeg -i "$orig" -c:a copy $dest
+vorbisgain "$dest"
+
