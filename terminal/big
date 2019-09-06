@@ -1,5 +1,4 @@
 #!/bin/sh
 
-standard
-tall "$@"
+/usr/bin/xtermset -geom 80x36
 
