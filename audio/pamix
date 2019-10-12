@@ -56,8 +56,21 @@ show_vol() {
         echo $sink_name
         echo $out
     else
-        notify-send -t 2000 -u low ${out}
+        if ! vol_bar $out
+        then
+            notify-send -t 2000 -u low ${out}
+        fi
     fi
+}
+
+vol_bar(){
+    type dunstify > /dev/null || return 1
+    vol=$(echo $1 | cut -d% -f 1)
+    bar=$(seq -s "─" $(($vol/5)) | tr -d '0-9')
+    icon=audio-volume-high
+    if [ $vol -lt 33 ]; then icon=audio-volume-low
+    elif [ $vol -lt 67 ]; then icon=audio-volume-medium; fi
+    dunstify -i $icon -r 407 -u low -t 2000 "    $bar"
 }
 
 show_mute(){
