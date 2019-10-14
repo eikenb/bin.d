@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ## script to change volume of pulse-audio via command line
-## for now only works on default
+## for now only works on the default sink
 
 # this lets it work on systems over ssh
 # XDG_RUNTIME_DIR is usally set by the session manager
@@ -56,21 +56,22 @@ show_vol() {
         echo $sink_name
         echo $out
     else
-        if ! vol_bar $out
+        if ! dunstify_vol_bar $out
         then
             notify-send -t 2000 -u low ${out}
         fi
     fi
 }
 
-vol_bar(){
+# only works w/ dunst notification daemon
+dunstify_vol_bar(){
     type dunstify > /dev/null || return 1
     vol=$(echo $1 | cut -d% -f 1)
     bar=$(seq -s "─" $(($vol/5)) | tr -d '0-9')
-    icon=audio-volume-high
-    if [ $vol -lt 33 ]; then icon=audio-volume-low
-    elif [ $vol -lt 67 ]; then icon=audio-volume-medium; fi
-    dunstify -i $icon -r 407 -u low -t 2000 "    $bar"
+    icon=audio-volume-high-symbolic
+    if [ $vol -lt 33 ]; then icon=audio-volume-low-symbolic
+    elif [ $vol -lt 67 ]; then icon=audio-volume-medium-symbolic; fi
+    dunstify -i $icon -r 407 -u low -t 2000 "[$vol]    $bar"
 }
 
 show_mute(){
