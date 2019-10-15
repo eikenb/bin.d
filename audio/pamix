@@ -66,12 +66,13 @@ show_vol() {
 # only works w/ dunst notification daemon
 dunstify_vol_bar(){
     type dunstify > /dev/null || return 1
-    vol=$(echo $1 | cut -d% -f 1)
+    vol=${out%%%*}
     bar=$(seq -s "─" $(($vol/5)) | tr -d '0-9')
     icon=audio-volume-high-symbolic
     if [ $vol -lt 33 ]; then icon=audio-volume-low-symbolic
     elif [ $vol -lt 67 ]; then icon=audio-volume-medium-symbolic; fi
-    dunstify -i $icon -r 407 -u low -t 2000 "[$vol]    $bar"
+    [ $vol -eq 100 ] && space="   " || space="    "
+    dunstify -i $icon -r 407 -u low -t 2000 "[$vol]$space$bar"
 }
 
 show_mute(){
