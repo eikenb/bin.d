@@ -3,5 +3,5 @@
 dim=$(stty size)
 height=${dim%% *}
 
-/usr/bin/xtermset -geom 80x${height}
+/usr/bin/xtermset -geom 84x${height}
 

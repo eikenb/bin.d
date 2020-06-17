@@ -1,4 +1,4 @@
 #!/bin/sh
 
-/usr/bin/xtermset -geom 80x24
+/usr/bin/xtermset -geom 84x24
 
