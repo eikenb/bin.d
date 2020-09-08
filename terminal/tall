@@ -8,6 +8,8 @@ cmd=`basename $0`
 chg=12
 mult=1
 [ -n "$1" ] && mult="$1"
+[ "$mult" -gt 5 ] && { echo "bad multipler"; exit 1; }
+
 if [ $cmd = "short" ] ; then
     height=$(( $height-$chg*$mult ))
 else
