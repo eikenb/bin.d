@@ -4,36 +4,65 @@
 
 # http://www.reddit.com/r/linux/comments/n8a2k/commandline_star_trek_engine_noise_comment_from/
 
-# odokemono
-# http://www.reddit.com/r/scifi/comments/n7q5x/want_to_pretend_you_are_aboard_the_enterprise_for/c36xkjx
-# original
-# play -n -c1 synth whitenoise band -n 100 20 band -n 50 20 gain +25  fade h 1 864000 1
+N=$(echo $(($(hexdump -n1 -e'"%u""\n"' /dev/urandom)/36)))
+[ -n "$1" ] && N="$1"
 
-# noname-_-
-# http://www.reddit.com/r/scifi/comments/n7q5x/want_to_pretend_you_are_aboard_the_enterprise_for/c373gpa
-# stereo
-# play -c2 -n synth whitenoise band -n 100 24 band -n 300 100 gain +20
+pgrep -f "/usr/bin/play" 2> /dev/null && pkill -f "/usr/bin/play"
 
-# from that thread
-#play -n -c1 synth whitenoise band -n 100 20 band -n 50 20 gain +25  fade h 1 864000 1
-#play -n -c1 synth whitenoise lowpass -1 120 lowpass -1 120 lowpass -1 120 gain +16
+if [ -t 0 ] && [ -t 1 ]
+then
+    echo "Playing sound #$N"
+else
+    type notify-send > /dev/null && notify-send "Playing sound #$N"
+fi
 
 
+play="/usr/bin/play -q -n"
+
+case $N in
+    0)
 # braclayrab
 # http://www.reddit.com/r/scifi/comments/n7q5x/want_to_pretend_you_are_aboard_the_enterprise_for/c372pyy
 # TNG
-play -n -c1 synth whitenoise band 100 20 compand .3,.8 -1,-10 gain +20
+$play -c1 synth whitenoise band 100 20 compand .3,.8 -1,-10 gain +20
+;;
+    1)
+# trynewideas
+# https://news.ycombinator.com/item?id=24601612
+$play -c1 synth whitenoise lowpass -1 400 lowpass -1 300 lowpass -1 200 lowpass -1 100 gain +10
+;;
+    2)
+# noname-_-
+# http://www.reddit.com/r/scifi/comments/n7q5x/want_to_pretend_you_are_aboard_the_enterprise_for/c373gpa
+# stereo
+$play -c2 synth whitenoise band -n 100 24 band -n 300 100 gain +20
+;;
+    3)
+# from that thread
+$play -c1 synth whitenoise band -n 100 20 band -n 50 20 gain +25  fade h 1 864000 1
+;;
+    4)
+$play -c1 synth whitenoise lowpass -1 120 lowpass -1 120 lowpass -1 120 gain +16
+;;
 
-
+    5)
+# odokemono
+# http://www.reddit.com/r/scifi/comments/n7q5x/want_to_pretend_you_are_aboard_the_enterprise_for/c36xkjx
+# original
+$play -c1 synth whitenoise band -n 100 20 band -n 50 20 gain +25  fade h 1 864000 1
+;;
+    6)
+# Nathan Haines on G+
+# https://plus.google.com/103726097950194848776/posts/CKQQvbLAdN2
+$play -c2 synth whitenoise band -n 100 24 band -n 300 100 gain +20
+;;
+    7)
+$play -c1 synth whitenoise lowpass -1 120 lowpass -1 120 lowpass -1 120 gain +14
+;;
 # cvenomz
 # http://www.reddit.com/r/scifi/comments/n7q5x/want_to_pretend_you_are_aboard_the_enterprise_for/c375vm0
 # run all three at the same time
 # play -n -c2 synth whitenoise band -n 100 20 band -n 50 20 gain +20 fade h 1 864000 1
 # play -n -c2 synth whitenoise lowpass -1 100 lowpass -1 50 gain +7
 # play -n -c2 synth whitenoise band -n 3900 50 gain -30
-
-# Nathan Haines on G+
-# https://plus.google.com/103726097950194848776/posts/CKQQvbLAdN2
-# play -c2 -n synth whitenoise band -n 100 24 band -n 300 100 gain +20
-
-# play -n -c1 synth whitenoise lowpass -1 120 lowpass -1 120 lowpass -1 120 gain +14
+esac
