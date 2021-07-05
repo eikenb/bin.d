@@ -1,5 +1,7 @@
 #!/bin/sh
 
+### Small terminal to (run and) display command output.
+
 usage () {
     echo "Usage: `basename $0` [options]"
     echo "Options:"
