@@ -1,0 +1,22 @@
+#!/bin/sh
+
+cmd=$(basename $0)
+chg=12
+mult=1
+[ -n "$1" ] && mult="$1"
+[ "$mult" -gt 5 ] && { echo "bad multipler"; exit 1; }
+
+tty_dim=$(stty size)
+tty_height=${tty_dim%% *}
+win_height=$(xwininfo -id "$(xdotool getwindowfocus)" | awk '/Height:/ {print $2}')
+
+row=$((win_height/tty_height))
+
+if [ $cmd = "shorter" ]
+then
+    new_win_height=$((win_height - (row * (chg*mult))))
+else
+    new_win_height=$((win_height + (row * (chg*mult))))
+fi
+
+wmctrl -r ":ACTIVE:" -e 0,-1,-1,-1,$new_win_height
