@@ -10,11 +10,15 @@ tty_dim=$(stty size)
 tty_height=${tty_dim%% *}
 win_height=$(xwininfo -id "$(xdotool getwindowfocus)" | awk '/Height:/ {print $2}')
 
-row=$((win_height/tty_height))
+win_height_adj=$((win_height+(tty_height/2)-1))
+row=$((win_height_adj/tty_height))
 
-if [ $cmd = "shorter" ]
-then
+if [ $cmd = "shorter" ]; then
     new_win_height=$((win_height - (row * (chg*mult))))
+elif [ "$cmd" = "big" ]; then
+    new_win_height=$((row * 36))
+elif [ "$cmd" = "small" ]; then
+    new_win_height=$((row * 24))
 else
     new_win_height=$((win_height + (row * (chg*mult))))
 fi

@@ -29,6 +29,11 @@ while getopts fb:g:o:t:h arg; do
     esac
 done
 
+height=3
+width=64
+res_width=2560
+x=$((res_width-(width*8)))
+
 # if not specified, draw in upper right corner, top down, fill in blank spots
 if [ -z "$geom" ]; then
     count=$(xdotool search --onlyvisible --classname cmd-term | wc -l)
@@ -54,7 +59,7 @@ if [ -z "$geom" ]; then
     fi
 
     y=$(( $num * 50 ))
-    geom=64x3-0+${y}
+    geom=${width}x${height}-${x}+${y}
 fi
 
 [ -n "$focus" ] && name='focused-cmd-term' || name='cmd-term'
@@ -62,7 +67,15 @@ fi
 [ -n "$SHELL" ] || SHELL=/bin/sh
 
 #-pixmap "${HOME}/.themes/Wallpaper/pennyarcade_bkgd.png;0+0+0:op=tile" \
-if type urxvt > /dev/null
+if type alacritty > /dev/null
+then
+    exec alacritty --class $name \
+        --config-file ~/.config/alacritty/cmd-term.yml \
+        -o window.position.x=${x} -o window.position.y=${y} \
+        -o window.dimensions.columns=${width} \
+        -o window.dimensions.lines=${height} \
+        -e $SHELL -c "$@" &
+elif type urxvt > /dev/null
 then
     rxvt="urxvt"
     pgrep urxvtd > /dev/null && rxvt="urxvtc"
