@@ -5,20 +5,22 @@ chg=12
 mult=1
 [ -n "$1" ] && mult="$1"
 [ "$mult" -gt 5 ] && { echo "bad multipler"; exit 1; }
+padding=$((6 * 2))
 
 tty_dim=$(stty size)
 tty_height=${tty_dim%% *}
 win_height=$(xwininfo -id "$(xdotool getwindowfocus)" | awk '/Height:/ {print $2}')
-
-win_height_adj=$((win_height+(tty_height/2)-1))
+# need actual text rendering area, so subtrace padding (+1 for round up)
+win_height_adj=$((win_height - padding + 1))
 row=$((win_height_adj/tty_height))
 
+
 if [ $cmd = "shorter" ]; then
-    new_win_height=$((win_height - (row * (chg*mult))))
+    new_win_height=$((win_height - (row * (chg*mult)) + 6))
 elif [ "$cmd" = "big" ]; then
-    new_win_height=$((row * 36))
+    new_win_height=$((row * 36 + padding))
 elif [ "$cmd" = "small" ]; then
-    new_win_height=$((row * 24))
+    new_win_height=$((row * 24 + padding))
 else
     new_win_height=$((win_height + (row * (chg*mult))))
 fi
