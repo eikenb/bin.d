@@ -29,10 +29,13 @@ while getopts fb:g:o:t:h arg; do
     esac
 done
 
+cmd="$@"
+
 height=3
 width=64
 res_width=2560
-x=$((res_width-(width*8)))
+y=0
+x=$((res_width-(width*10)))
 
 # if not specified, draw in upper right corner, top down, fill in blank spots
 if [ -z "$geom" ]; then
@@ -60,13 +63,21 @@ if [ -z "$geom" ]; then
 
     y=$(( $num * 50 ))
     geom=${width}x${height}-${x}+${y}
+else
+    echo "here, $geom"
+    set -- $(printf "$geom" \
+        | sed -E 's/([0-9]+)x([0-9]+)([-+][0-9]+)?([+-][0-9]+)?/\1 \2 \3 \4/')
+    width=$1
+    height=$2
+    [ -n "$3" ] && x=$3
+    [ -n "$4" ] && y=$4
+    echo $width $height $x $y
 fi
 
 [ -n "$focus" ] && name='focused-cmd-term' || name='cmd-term'
 
 [ -n "$SHELL" ] || SHELL=/bin/sh
 
-#-pixmap "${HOME}/.themes/Wallpaper/pennyarcade_bkgd.png;0+0+0:op=tile" \
 if type alacritty > /dev/null
 then
     exec alacritty --class $name \
@@ -74,7 +85,7 @@ then
         -o window.position.x=${x} -o window.position.y=${y} \
         -o window.dimensions.columns=${width} \
         -o window.dimensions.lines=${height} \
-        -e $SHELL -c "$@" &
+        -e $SHELL -c "$cmd" &
 elif type urxvt > /dev/null
 then
     rxvt="urxvt"
@@ -82,10 +93,10 @@ then
     exec $rxvt -fn terminus-16 -name $name -title "$title" \
         -geometry "${geom}" -bl -b 0 -bd "$border" -cr grey \
         -depth 32 -fg grey -bg "[${opacity}]#2d2d2d" \
-        -e $SHELL -c "$@" &
+        -e $SHELL -c "$cmd" &
 else # terminal lowest common denominator
     exec x-terminal-emulator -fn terminus-16 -name $name -title "$title" \
         -geometry "${geom}" -b 1 -cr grey \
-        -e $SHELL -c "$@" &
+        -e $SHELL -c "$cmd" &
 fi
 
