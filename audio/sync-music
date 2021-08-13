@@ -4,8 +4,8 @@ usage () {
     echo "Usage: `basename $0` COMMAND [options]"
     echo "COMMANDs:"
     echo "usb    - sync all music to usb drive (/media/data)"
-    echo "hd     - sync goodlist playlist songs to local drive."
-    echo "player - sync goodlist playlist songs to FiiO."
+    echo "hd     - sync playlist songs to local drive."
+    echo "player - sync playlist songs to M0."
 }
 short-usage () {
     echo "hd player usb"
