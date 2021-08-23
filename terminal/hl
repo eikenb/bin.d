@@ -43,7 +43,7 @@ else
             color="$1"
             shift
         else
-            color=190
+            color=$(shuf -i 20-231 -n 1)
         fi
         patterns="$patterns s/\($1\)/[38;5;${color}m\1[0m/g$case;"
         shift
