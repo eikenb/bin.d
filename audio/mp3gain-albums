@@ -7,7 +7,7 @@
 find . -type d | while read d; do
     if ls "$d"/*.mp3 > /dev/null 2>&1; then
         echo +++++ Processing "$d"
-        replaygain -f "$d"/*.mp3
+        replaygain "$d"/*.mp3
         echo; echo
     fi
 done
