@@ -5,7 +5,10 @@ set -e -u
 cmd=$(basename $0)
 chg=12
 mult=1
-[ "$#" -gt 0 ] && [ -n "$1" ] && mult="$1"
+case "$1" in
+    reset|r*) cmd="${cmd}-reset" ;;
+    [0-9]*) mult="$1" ;;
+esac
 [ "$mult" -gt 5 ] && { echo "bad multipler"; exit 1; }
 padding=$((6 * 2))
 
@@ -22,19 +25,23 @@ win_width_adj=$((win_width - padding + 1))
 column=$((win_width_adj/tty_width))
 
 new_win_width=-1
+new_win_height=-1
 case $cmd in
-    big)
+    taller-reset)
         new_win_height=$((row * 36 + padding))
         new_win_width=$((column * 84 + padding))
         ;;
-    small)
+    smaller-reset)
         new_win_height=$((row * 24 + padding))
         new_win_width=$((column * 84 + padding))
         ;;
-    short*)
+    eighty)
+        new_win_width=$((column * 84 + padding))
+        ;;
+    smaller)
         new_win_height=$((win_height - (row * (chg*mult)) + 6))
         ;;
-    tall*)
+    taller)
         new_win_height=$((win_height + (row * (chg*mult))))
         ;;
 esac
