@@ -7,12 +7,10 @@
 # XDG_RUNTIME_DIR is usally set by the session manager
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
 
-sink_name=$(pacmd stat | awk '/sink name/ { print $4 }')
-default_sink=$(pacmd list-sinks | awk '/\* index:/ {print $3}')
-
-volume=$(pacmd dump-volumes \
-    | awk -F= "/Sink $default_sink/ { print \$3 }" \
-    | awk '{ print $1$4,$8$11}')
+sink_name=$(pactl list sinks | awk '/Name:/ { print $2 }')
+default_sink=$(pactl list sinks | awk -F\# '/^Sink/ {print $2}')
+lr_volume=$(pactl list sinks | awk '/^\s+Volume:/ { print $5"/"$12 }')
+volume=${lr_volume%%%*}
 
 usage() {
     [ -n "$1" ] && echo "$1"
@@ -32,10 +30,6 @@ if [ -z "$change" ]; then
     change=$(( 5 * $(echo $1 | grep -o -- "[+-]" | wc -w) ))
 fi
 
-volume=$(pacmd dump-volumes \
-    | awk -F= "/Sink $default_sink/ { print \$3 }" \
-    | awk '{ print $4 }')
-
 ceil () { vol="${1%*%}"; chg="$2"
     newvol=$(( $vol + $chg ))
     mod=$(( $newvol - 100 ))
@@ -48,17 +42,13 @@ floor () { vol="${1%*%}"; chg="$2"
 }
 
 show_vol() {
-    # final volume
-    out=$(pacmd dump-volumes \
-            | awk -F= "/Sink $default_sink/ { print \$2 }" \
-            | awk '{ print $4"/"$11}')
     if [ -t 0 ]; then
         echo $sink_name
-        echo $out
+        echo $lr_volume
     else
-        if ! dunstify_vol_bar $out
+        if ! dunstify_vol_bar $lr_volume
         then
-            notify-send -t 2000 -u low ${out}
+            notify-send -t 2000 -u low ${lr_volume}
         fi
     fi
 }
@@ -76,7 +66,7 @@ dunstify_vol_bar(){
 }
 
 show_mute(){
-    if pacmd list-sinks | awk '/* index/,/muted/' | grep -q 'muted: yes'
+    if pactl list sinks | grep -q "Mute: yes"
     then
         status="Sound Muted"
     else
@@ -113,6 +103,7 @@ case "$1" in
         ;;
     *)
         show_vol
+        show_mute
         ;;
 esac
 
