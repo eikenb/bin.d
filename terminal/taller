@@ -2,15 +2,26 @@
 
 set -e -u
 
-cmd=$(basename $0)
 chg=12
 mult=1
+# based on term settings
+# currently using alacritty with padding of 6 (per side, so *2)
+padding=$((6 * 2))
+
+case $# in
+    0) set -- $mult $chg ;;
+    1) set -- $1 $chg ;;
+esac
+
+cmd=$(basename $0)
+
 case "$1" in
     reset|r*) cmd="${cmd}-reset" ;;
     [0-9]*) mult="$1" ;;
 esac
 [ "$mult" -gt 5 ] && { echo "bad multipler"; exit 1; }
-padding=$((6 * 2))
+
+chg=$2 # never used this, but maybe one day..
 
 tty_dim=$(stty size)
 tty_height=${tty_dim%% *}
