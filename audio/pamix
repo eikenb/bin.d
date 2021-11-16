@@ -9,13 +9,12 @@ export XDG_RUNTIME_DIR=/run/user/$(id -u)
 
 sink_name=$(pactl list sinks | awk '/Name:/ { print $2 }')
 default_sink=$(pactl list sinks | awk -F\# '/^Sink/ {print $2}')
-lr_volume=$(pactl list sinks | awk '/^\s+Volume:/ { print $5"/"$12 }')
-volume=${lr_volume%%%*}
 
 usage() {
     [ -n "$1" ] && echo "$1"
     echo "Usage: $(basename $0) [command] [percent]"
     echo "Commands:"
+    echo "\tm/mute     toggle mute"
     echo "\t+/up       volume up"
     echo "\t-/down     volume down"
     echo "Examples:"
@@ -30,15 +29,16 @@ if [ -z "$change" ]; then
     change=$(( 5 * $(echo $1 | grep -o -- "[+-]" | wc -w) ))
 fi
 
-ceil () { vol="${1%*%}"; chg="$2"
-    newvol=$(( $vol + $chg ))
-    mod=$(( $newvol - 100 ))
-    [ $newvol -gt 100 ] && echo $(( $chg - $mod )) || echo $chg
+get_vol() {
+    lr_volume=$(pactl list sinks | awk '/^\s+Volume:/ { print $5"/"$12 }')
+    volume=${lr_volume%%%*}
 }
+get_vol
 
-floor () { vol="${1%*%}"; chg="$2"
-    newvol=$(( $volume - $chg ))
-    [ $newvol -lt 0 ] && echo $(( $chg + $newvol )) || echo $chg
+set_vol() {
+    new_vol_perc="${1}"
+    pactl -- set-sink-volume @DEFAULT_SINK@ "${new_vol_perc}"
+    get_vol
 }
 
 show_vol() {
@@ -78,22 +78,33 @@ show_mute(){
     fi
 }
 
+ceil () { vol="${1%*%}"; chg="$2"
+    newvol=$(( $vol + $chg ))
+    mod=$(( $newvol - 100 ))
+    [ $newvol -gt 100 ] && echo $(( $chg - $mod )) || echo $chg
+}
+
+floor () { vol="${1%*%}"; chg="$2"
+    newvol=$(( $volume - $chg ))
+    [ $newvol -lt 0 ] && echo $(( $chg + $newvol )) || echo $chg
+}
+
 case "$1" in
     -h|--help)
         usage
         ;;
     [0-9]*)
-        pactl -- set-sink-volume @DEFAULT_SINK@ ${change}%
+        set_vol "${change}%"
         show_vol
         ;;
     [+]*|u*)
         change=$(ceil $volume $change)
-        pactl -- set-sink-volume @DEFAULT_SINK@ +${change}%
+        set_vol "+${change}%"
         show_vol
         ;;
     [-]*|d*)
         change=$(floor $volume $change)
-        pactl -- set-sink-volume @DEFAULT_SINK@ -${change}%
+        set_vol "-${change}%"
         show_vol
         ;;
     mute|m*)
