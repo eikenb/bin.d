@@ -7,7 +7,7 @@ path.
 
 - audio - play/convert/tag whatever
 - files - general/pipe file related things
+- hardware - control aspects of some hardware
 - mail  - mutt and spam filter related
 - net   - wifi connecting and pinging
 - terminal - various handy terminal scripts
-- hardware - control aspects of some hardware
