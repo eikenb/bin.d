@@ -3,7 +3,7 @@
 
 Various scripts from my ~/bin directory. I've organized the ones I want in
 github into ~/bin/bin.d/ that I then just add all contained directories to my
-path.
+PATH.
 
 - audio - play/convert/tag whatever
 - files - general/pipe file related things
