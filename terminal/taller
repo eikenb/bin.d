@@ -47,6 +47,7 @@ case $cmd in
         new_win_width=$((column * 84 + padding))
         ;;
     eighty)
+        new_win_height=${win_height}
         new_win_width=$((column * 84 + padding))
         ;;
     smaller)
