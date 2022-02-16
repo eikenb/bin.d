@@ -1,4 +1,3 @@
 #!/bin/sh
 
-/usr/bin/xtermset -iconify
-
+xdotool windowminimize $(xdotool getwindowfocus)
