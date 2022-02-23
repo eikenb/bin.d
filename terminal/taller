@@ -51,7 +51,7 @@ case $cmd in
         new_win_width=$((column * 84 + padding))
         ;;
     smaller)
-        new_win_height=$((win_height - (row * (chg*mult)) + 6))
+        new_win_height=$((win_height - (row * (chg*mult))))
         ;;
     taller)
         new_win_height=$((win_height + (row * (chg*mult))))
