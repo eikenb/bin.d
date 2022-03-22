@@ -4,7 +4,8 @@
 # to run directly
 
 tmpdir="/tmp/mutt-spam"
-tmpfile=`tempfile -d $tmpdir`
+#tmpfile=`tempfile -d $tmpdir`
+tmpfile=$(mktemp -p $tmpdir)
 
 # mail should be coming in on stdin, stick it in a file
 cat > $tmpfile
