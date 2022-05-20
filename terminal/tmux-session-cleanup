@@ -1,0 +1,18 @@
+#!/bin/zsh
+
+# debugging
+#exec 1> ~/tmp/tmux-cleanup-out 2>&1
+
+# call from tmux.conf hook...
+# set-hook -g client-detached 'run-shell tmux-session-cleanup'
+
+declare -A one=()
+/usr/bin/tmux ls -F "#{session_id} #{session_group} #{session_attached}" \
+  | while read id grp a; do
+    if [[ -z "$one[$grp]" ]]
+      then one[$grp]=1
+    elif [[ "$a" -eq 0 ]]
+      then tmux kill-session -t "$id"
+    fi
+  done
+
