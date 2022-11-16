@@ -3,8 +3,8 @@
 [ -n "$1" ] && sound="$@" || sound=~/.themes/Sounds/thunder.wav
 
 if mpc 2>&1 | grep -q playing ; then
-    exec /usr/bin/play -v 1.3 $sound > /dev/null 2>&1
+    exec /usr/bin/play --buffer 512 -v 1.3 $sound > /dev/null 2>&1
 else
-    exec /usr/bin/play $sound > /dev/null 2>&1
+    exec /usr/bin/play --buffer 512 $sound > /dev/null 2>&1
 fi
 
