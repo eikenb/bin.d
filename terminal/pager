@@ -1,0 +1,80 @@
+#!/bin/sh
+
+# Set this as your pager via the PAGER environment variable. Works great with
+# man and every other app that has used it so far.
+
+# Uses my pager.vim macro which just tweaks the vim settings to behave in a
+# more pager like way. Get the pager.vim macro and put it in ~/.vim/macros/.
+#
+# For man pages I also have a man_title.vim a filetype plugin which places the
+# man page's topic in the x-terminal's titlebar. Just put it in
+# ~/.vim/ftplugin/.
+#
+# The pager.vim macro and man_title.vim plugin should be available on my site
+# (probably right next to where you got this) at
+# <http://zhar.net/projects/shell/>.  If not there look around for a vim area,
+# I'm thinking about created one.
+
+# 0 - stdin
+# 1 - stdout
+# 2 - stderr
+
+usage () {
+    echo "usage: $(basename $0) [options] [FILE]"
+    echo "-m file is man page"
+    echo "-e use AnsiEsc"
+    exit
+}
+
+vim="nvim"
+man=
+esc=
+while getopts gmeh arg; do
+    case $arg in
+        m) man="true"; shift;;
+        e) esc="true"; shift;;
+        h) usage;;
+    esac
+done
+
+view="${vim} -R"
+if [ "${vim}" = "vim" ]; then
+    view="${view} -i ${HOME}/.tmp/pager.viminfo"
+    [ -n "$esc" ] && view="$view -c AnsiEsc"
+fi
+
+if [ -t 0 ]; then
+    # stdin is open (file on command line)
+    if [ -n "$man" ]; then
+        # perldoc calls as man viewer w/ tmpfile
+        # don't alter the original
+        tmp=`mktemp`
+        trap "rm -f $tmp; exit" 0 2
+        cat "$1" | col -bx > $tmp
+        if [ "${vim}" = "nvim" ]; then
+            # nvim added :Man which handles RO and highlighting
+            $vim  -c "Man!" -c 'runtime macros/pager.vim' "$tmp"
+        else
+            $view -c 'runtime macros/pager.vim' -c 'set ft=man' "$tmp"
+        fi
+    else
+        exec $view -c 'runtime macros/pager.vim' "$@"
+#        --cmd "au BufNewFile * cq" "$@"
+    fi
+elif [ -t 1 ]; then
+    # stdin closed (0) but stdout open
+    # piped input (eg. man viewer)
+    if [ -n "$man" ]; then
+        if [ "${vim}" = "nvim" ]; then
+            # nvim added :Man which handles RO and highlighting
+            exec $vim -c "Man!" -c 'runtime macros/pager.vim' -
+        else
+            exec col -bx | $view -c 'runtime macros/pager.vim' -c 'set ft=man' -
+        fi
+    else
+        exec $view -c 'runtime macros/pager.vim' "$@" -
+    fi
+else
+    # man w/ piped output
+    exec cat
+fi
