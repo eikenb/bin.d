@@ -67,7 +67,7 @@ case "$1" in
         rm_old /home/jae/shelf/music
         ;;
     player)
-        MOUNT=$(df | grep /media/data | iselect -af -p 9 | awk '{print $6}')
+        MOUNT=$(df | grep /media | iselect -af -p 9 | awk '{print $6}')
         echo "Verify mount: ($MOUNT)"
         mount | grep "$MOUNT"
         echo Press Enter to continue Ctrl-C to abort.; read ignore
