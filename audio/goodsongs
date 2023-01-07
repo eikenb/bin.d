@@ -131,7 +131,7 @@ add_file_to_list() {
   [ -e "$filepath" ] || usage
   local mdir="$(mpdParam '^music_directory')/"
   song="${filepath#$mdir}"
-  _add_song $song
+  _add_song "$song"
 }
 
 add_to_list() {
