@@ -52,9 +52,11 @@ case $cmd in
         ;;
     smaller)
         new_win_height=$((win_height - (row * (chg*mult))))
+        new_win_width=$((column * $tty_width + padding))
         ;;
     taller)
         new_win_height=$((win_height + (row * (chg*mult))))
+        new_win_width=$((column * $tty_width + padding))
         ;;
 esac
 
