@@ -33,16 +33,15 @@ set -u
 case $src in
     /) ;; /*/) ;; *:/) ;; *:/*/) ;; *)   echo "*** Bad src argument"; usage ;;
 esac
-#    /) ;; /*/) ;; *:/) ;; *:/*/) ;; *)   echo "*** Bad src argument"; usage ;;
 
 case $dest in
     /*[!/])  ;; *)   echo "*** Bad dest argument"; usage ;;
 esac
 
-echo mirror running
+echo "mirror running"
 /usr/bin/rsync -axHAX --delete --delete-excluded --numeric-ids \
-    $excludes$src $dest
-echo mirror done
+    $excludes $src $dest
+echo "mirror done"
 # -P when testing
 # -S makes it VERY slow and -H is reported to make it slow
 # Don't use either unless you know they are necessary.
