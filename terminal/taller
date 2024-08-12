@@ -2,7 +2,7 @@
 
 set -e -u
 
-width=84
+width=86
 tall=36
 small=24
 
