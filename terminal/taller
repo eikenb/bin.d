@@ -2,6 +2,10 @@
 
 set -e -u
 
+width=84
+tall=36
+small=24
+
 chg=12
 mult=1
 # based on term settings
@@ -39,24 +43,24 @@ new_win_width=-1
 new_win_height=-1
 case $cmd in
     taller-reset)
-        new_win_height=$((row * 36 + padding))
-        new_win_width=$((column * 84 + padding))
+        new_win_height=$((row * tall + padding))
+        new_win_width=$((column * width + padding))
         ;;
     smaller-reset)
-        new_win_height=$((row * 24 + padding))
-        new_win_width=$((column * 84 + padding))
+        new_win_height=$((row * small + padding))
+        new_win_width=$((column * width + padding))
         ;;
     eighty)
         new_win_height=${win_height}
-        new_win_width=$((column * 84 + padding))
+        new_win_width=$((column * width + padding))
         ;;
     smaller)
         new_win_height=$((win_height - (row * (chg*mult))))
-        new_win_width=$((column * $tty_width + padding))
+        new_win_width=$((column * tty_width + padding))
         ;;
     taller)
         new_win_height=$((win_height + (row * (chg*mult))))
-        new_win_width=$((column * $tty_width + padding))
+        new_win_width=$((column * tty_width + padding))
         ;;
 esac
 
