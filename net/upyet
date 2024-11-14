@@ -97,6 +97,7 @@ exit_on_dev_change () {
 }
 
 ping='/bin/ping'
+play="/usr/bin/play --buffer=32 -v $vol -q"
 
 if [ "$cmd" = "downyet" ]; then
     trap 'report exit' 0 2
@@ -119,14 +120,14 @@ if [ "$cmd" = "downyet" ]; then
     done
 
     if [ -n "$flip" ]; then
-        [ -n "$quiet" ] || /usr/bin/play -v $vol -q $downsound &
+        [ -n "$quiet" ] || $play $downsound &
         echo "${ERR}-------------------- DOWN --------------------${RST}"
         report
         sleep $delay;
         exec upyet $ARGS
     else
         report
-        [ -n "$quiet" ] || exec /usr/bin/play -v $vol -q $downsound
+        [ -n "$quiet" ] || exec $play $downsound
     fi
 else
     ping="$ping -i $interval"
@@ -148,11 +149,11 @@ else
 
         echo "${HIT}-------------------- UP --------------------${RST}"
         if [ -n "$flip" ]; then
-            [ -n "$quiet" ] || /usr/bin/play -v $vol -q  $upsound &
+            [ -n "$quiet" ] || $play $upsound &
             exec downyet $ARGS
         else
             [ -n "$quiet" ] \
-                || exec /usr/bin/play -v $vol -q $upsound
+                || exec $play $upsound
         fi
     fi
 fi
