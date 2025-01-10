@@ -146,7 +146,6 @@ add_to_list() {
 
 _add_song() {
   local song="$1"
-  # add it -- prevent dupes
   grep -Fqx "$song" "$list" || echo "$song" >> "$list"
 
   mpc add "$song"
@@ -218,18 +217,18 @@ run() {
   create_list # create list file
 
   # no more args... means add current song to list
-  [ -z "$@" ] && add_to_list && exit
+  [ -z "$1" ] && add_to_list && exit
 
   for arg ; do
     case "$arg" in
       -d|--delete) rm_from_list            ;;
       -b|--build)  build_playlist          ;;
-      -f|--find)   shift; search_list "$*" ;;
+      -f|--find)   shift; search_list "$*"; break ;;
       -p|--play)   play_one                ;;
       -P|--print)  printlist               ;;
       -s|--show)   show_one                ;;
       -S|--smart)  smart_play              ;;
-      *) add_file_to_list "$@"         ;;
+      *) add_file_to_list "$arg"         ;;
     esac
   done
 }
