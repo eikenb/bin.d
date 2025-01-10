@@ -10,7 +10,9 @@ case $iam in
     anything-to-mp3)
         [ -n "$dst" ] || dst="${1%.*}.mp3"
         ffmpeg -i "$src" -acodec libmp3lame -aq 2 "$dst"
-        replaygain -f "$dst"
+        # latest replay gain setting software is...
+        # package: loudgain
+        loudgain -s i "$dst"
 
         # use -to hh:mm:ss to cut the end of the audio
         # eg. cut it off at 4 minutes 7 seconds
