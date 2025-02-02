@@ -2,22 +2,34 @@
 
 set -e -u
 
-width=86
-tall=36
+width=90
+tall=48
 small=24
 
 chg=12
 mult=1
+
+# alacritty character 'cell' size for current set font
+cell_w=14 # alienware
+cell_h=28
+
 # based on term settings
 # currently using alacritty with padding of 6 (per side, so *2)
-padding=$((6 * 2))
+padding=$((6 * 2 + 2)) # alienware
 
+# alacritty seems to have a different cell sizes based on the display
+external=$(xrandr --current | grep "DisplayPort-1 connected")
+if [ -z "$external" ]; then
+    padding=$((6 * 2 + 20)) # framework
+    cell_w=16 # framework
+fi
+
+# cli parsing/arg setting
+cmd=$(basename $0)
 case $# in
     0) set -- $mult $chg ;;
     1) set -- $1 $chg ;;
 esac
-
-cmd=$(basename $0)
 
 case "$1" in
     reset|r*) cmd="${cmd}-reset" ;;
@@ -29,39 +41,32 @@ chg=$2 # never used this, but maybe one day..
 
 tty_dim=$(stty size)
 tty_height=${tty_dim%% *}
-win_height=$(xwininfo -id "$(xdotool getwindowfocus)" | awk '/Height:/ {print $2}')
-# need actual text rendering area, so subtrace padding (+1 for round up)
-win_height_adj=$((win_height - padding + 1))
-row=$((win_height_adj/tty_height))
-
 tty_width=${tty_dim##* }
-win_width=$(xwininfo -id "$(xdotool getwindowfocus)" | awk '/Width:/ {print $2}')
-win_width_adj=$((win_width - padding + 1))
-column=$((win_width_adj/tty_width))
 
 new_win_width=-1
 new_win_height=-1
 case $cmd in
-    taller-reset)
-        new_win_height=$((row * tall + padding))
-        new_win_width=$((column * width + padding))
+    tall-reset|taller-reset)
+        new_win_height=$((cell_h * tall + padding))
+        new_win_width=$((cell_w * width + padding))
         ;;
-    smaller-reset)
-        new_win_height=$((row * small + padding))
-        new_win_width=$((column * width + padding))
+    small-reset|smaller-reset)
+        new_win_height=$((cell_h * small + padding))
+        new_win_width=$((cell_w * width + padding))
         ;;
     eighty)
-        new_win_height=${win_height}
-        new_win_width=$((column * width + padding))
+    		new_win_height=$((cell_h * tty_height + padding))
+        new_win_width=$((cell_w * width + padding))
         ;;
-    smaller)
-        new_win_height=$((win_height - (row * (chg*mult))))
-        new_win_width=$((column * tty_width + padding))
+    smaller|small|short|shorter)
+        new_win_height=$((tty_height * cell_h - (cell_h * (chg*mult))))
+        new_win_width=$((cell_w * tty_width + padding))
         ;;
-    taller)
-        new_win_height=$((win_height + (row * (chg*mult))))
-        new_win_width=$((column * tty_width + padding))
+    taller|tall)
+        new_win_height=$((tty_height * cell_h + (cell_h * (chg*mult))))
+        new_win_width=$((cell_w * tty_width + padding))
         ;;
 esac
 
+#echo wmctrl -r ":ACTIVE:" -e 0,-1,-1,$new_win_width,$new_win_height
 wmctrl -r ":ACTIVE:" -e 0,-1,-1,$new_win_width,$new_win_height
