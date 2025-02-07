@@ -217,7 +217,7 @@ run() {
   create_list # create list file
 
   # no more args... means add current song to list
-  [ -z "$1" ] && add_to_list && exit
+  [ $# -lt 1 ] && add_to_list && exit
 
   for arg ; do
     case "$arg" in
