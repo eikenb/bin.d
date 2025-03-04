@@ -140,8 +140,8 @@ add_to_list() {
   mpc | grep -Fq playing || exit 1
 
   # get song filename
-  song="$(mpc --format %file% | head -n 1)"
-  _add_song $song
+  song="$(mpc --format '%file%' | head -n 1)"
+  _add_song "$song"
 }
 
 _add_song() {
