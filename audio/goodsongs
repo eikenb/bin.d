@@ -127,7 +127,11 @@ build_playlist() {
 
 # add current song to the list
 add_file_to_list() {
-  local filepath="$(readlink -f $1)"
+  local filepath
+  case $1 in
+    /*) filepath="$1" ;;
+    *) filepath="$PWD/$1" ;;
+  esac
   [ -e "$filepath" ] || usage
   local mdir="$(mpdParam '^music_directory')/"
   song="${filepath#$mdir}"
