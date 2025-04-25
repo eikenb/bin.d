@@ -35,6 +35,10 @@ case $iam in
             ffmpeg -i "$src" -vn -c:a libvorbis -q:a 6.6 "$dst"
             vorbisgain "$dst"
         fi
+        ;;
+    anything-to-flac)
+        ffmpeg -i "$src" -f flac "$dst"
+        ;;
 esac
 
 
