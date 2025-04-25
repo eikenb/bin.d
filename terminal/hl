@@ -37,6 +37,9 @@ if [ $# -eq 1 ]; then
     color=190
     patterns="s/\($1\)/[38;5;${color}m\1[0m/g$case;"
 else
+    color=190
+    patterns="s/\($1\)/[38;5;${color}m\1[0m/g$case;"
+    shift
     while [ -n "$1" ]; do
         if echo "$1" | grep -q "^[[:digit:]]\+$"; then
             [ -n "$2" ] || usage 1
