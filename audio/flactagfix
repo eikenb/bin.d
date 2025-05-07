@@ -22,6 +22,8 @@ if [ $# -eq 1 ]; then
 $(metaflac --export-tags-to=- "$src")
 EOF
         echo $cmd \"$src\"
+        # XXX in case flac is contaminated with ID3(v2) tags
+        # eyeD3 --remove-all "$src"
         eval "$cmd \"$src\""
         lltag --yes --no-tagging --rename-sep _ --rename '%n.%t' "$src"
         # XXX use change this line for singles
