@@ -10,11 +10,25 @@ set -e
 
 usage(){
     [ -n "$1" ] && echo $1
-    echo "Usage: $(basename $0) [VendorID]:[ProductID] [on|off]"
+    echo "Usage: $(basename $0) [-n] [VendorID]:[ProductID] [on|off]"
+    echo "-n: Dry-run mode, do not actually change anything"
     exit 1
 }
 
 # Params
+while getopts "nlp" opt; do
+  case $opt in
+    n)
+      DRYRUN=1
+      shift
+      ;;
+    l|p)
+      LIST=1
+      shift
+      ;;
+  esac
+done
+
 echo "$1" | grep -q "[a-z0-9]\{4\}:[a-z0-9]\{4\}" || usage "Bad ID arg"
 if [ "$#" -eq 2 ]; then
     echo "$2" | grep -q "^on$\|^off$\|^stat" || usage "Use 'on' or 'off'"
@@ -32,6 +46,18 @@ sysfs="/sys/bus/usb/devices"
 togglefile="bConfigurationValue"
 alias vendor_files="grep $VID ${sysfs}/*/idVendor"
 
+# list product names that match the id
+if [ -n "$LIST" ]; then
+    for dev in $(vendor_files); do
+        basepath=${dev%/*}
+        if [ "$(cat $basepath/idProduct)" = "$PID" ]; then
+            printf "  $basepath: "
+            cat $basepath/product
+        fi
+    done
+    exit 0
+fi
+
 # loop through matching vendor files and act on matching product-ids
 for dev in $(vendor_files); do
     basepath=${dev%/*}
@@ -42,8 +68,13 @@ for dev in $(vendor_files); do
             [ "$param" = "on" ] && onoff=1
             [ "$onoff" -eq 2 ] && usage
             if [ -z "$current" ] || [ "$current" -ne "$onoff" ]; then
+              if [ -n "$DRYRUN" ]; then
+                echo "sudo sh -c \"printf $onoff > $basepath/$togglefile\""
+                exit 0
+              else
                 sudo sh -c "printf $onoff > $basepath/$togglefile"
                 current="$onoff"
+              fi
             fi
         fi
         #echo $basepath/$togglefile
