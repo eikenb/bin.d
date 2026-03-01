@@ -12,7 +12,7 @@ case $iam in
         ffmpeg -i "$src" -acodec libmp3lame -aq 2 "$dst"
         # latest replay gain setting software is...
         # package: loudgain
-        loudgain -s i "$dst"
+        loudgain -a -s i "$dst"
 
         # use -to hh:mm:ss to cut the end of the audio
         # eg. cut it off at 4 minutes 7 seconds
@@ -26,7 +26,7 @@ case $iam in
     anything-to-wav)
         [ -n "$dst" ] || dst="${1%.*}.wav"
         # set rate '-ar 44100' so waves are right format for CDs
-        ffmpeg -i "$src" -acodec pcm_s16le -ar 44100 -ac 2 "$dst"
+        ffmpeg -i "$src" -vn -acodec pcm_s16le -ar 44100 -ac 2 "$dst"
         ;;
     anything-to-ogg)
         if ! webm-to-ogg "$src"
@@ -36,8 +36,16 @@ case $iam in
             vorbisgain "$dst"
         fi
         ;;
+    anything-to-opus)
+        if ! webm-to-ogg "$src"
+        then
+            [ -n "$dst" ] || dst="${1%.*}.opus"
+            opusenc -b 128 "$src" "$dst"
+            vorbisgain "$dst"
+        fi
+        ;;
     anything-to-flac)
-        ffmpeg -i "$src" -f flac "$dst"
+        ffmpeg -i "$src" -vn -c:a flac "${src%.*}.flac"
         ;;
 esac
 

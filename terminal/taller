@@ -4,7 +4,7 @@ set -e -u
 
 width=90
 tall=48
-small=24
+small=29
 
 chg=12
 mult=1
@@ -18,11 +18,11 @@ cell_h=28
 padding=$((6 * 2 + 2)) # alienware
 
 # alacritty seems to have a different cell sizes based on the display
-external=$(xrandr --current | grep "DisplayPort-1 connected")
-if [ -z "$external" ]; then
-    padding=$((6 * 2 + 20)) # framework
-    cell_w=16 # framework
-fi
+# external=$(xrandr --current | grep "DisplayPort-1 connected" || true)
+# if [ -z "$external" ]; then
+#     padding=$((6 * 2 + 2)) # framework
+#     cell_w=14 # framework
+# fi
 
 # cli parsing/arg setting
 cmd=$(basename $0)
@@ -55,7 +55,7 @@ case $cmd in
         new_win_width=$((cell_w * width + padding))
         ;;
     eighty)
-    		new_win_height=$((cell_h * tty_height + padding))
+        new_win_height=$((cell_h * (tty_height - 1)))
         new_win_width=$((cell_w * width + padding))
         ;;
     smaller|small|short|shorter)

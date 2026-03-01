@@ -65,9 +65,9 @@ while getopts Aaglhm:pfeqyi:c:t:s:v: arg; do
         l) IP=$(level3); shift;;
         g) IP=$(google); shift;;
         y) IP=$(yahoo); shift;;
-        t|w) timeout=$OPTARG; shift; shift;;
-        s|d) delay=$OPTARG; shift; shift;;
-        h) usage;;
+        t) timeout=$OPTARG; shift; shift;;
+        s) delay=$OPTARG; shift; shift;;
+        h|*) usage;;
     esac
 done
 
