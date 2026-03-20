@@ -3,19 +3,20 @@
 upcase_var () {
     VAR=${1%%=*};
     VAL=${1#*=}
-    [ "$VAR" = "tracknumber" ] && VAR="NUMBER"
-    echo -n " --tag "
+    [ "$VAR" = "tracknumber" ] && VAR="TRACKNUMBER"
+    [ "$VAR" = "number" ] && VAR="TRACKNUMBER"
+    echo -n " --set-tag="
     echo -n \"
     echo -n $VAR | tr "a-z" "A-Z"
-    echo -n \"
     echo -n =
-    echo -n \"$(echo $VAL | tr -d '"')\"
+    echo -n $(echo $VAL | tr -d '"')
+    echo -n \"
 }
 
 if [ $# -eq 1 ]; then
     if [ "${1%.flac}.flac" = "$1" ]; then
         src="$1"
-        cmd="/usr/bin/lltag --yes --clear"
+        cmd="/usr/bin/metaflac --remove-all-tags "
         while read v; do
             cmd=$cmd$(upcase_var "$v")
         done << EOF
