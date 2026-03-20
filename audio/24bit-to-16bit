@@ -1,0 +1,34 @@
+#!/bin/bash
+
+set -e
+
+if [ $# -eq 1 ]; then
+    if [ "${1%.flac}.flac" = "$1" ]; then
+        base="${1%.flac}"
+        src="${base}.flac"
+        dst="${base}.16.flac"
+        echo
+        # echo $src $dst
+        echo
+        ffmpeg -loglevel -8 -i ${src} \
+          -af aresample=resampler=soxr:out_sample_fmt=s16:out_sample_rate=48000 \
+          ${dst}
+        # mv "${src}" "${base}.24.flac"
+        # mv "${dst}" "${src}"
+    else
+        echo "Input file ($1) was not a .flac."
+    fi
+elif [ -t 0 ]; then
+    echo "$@" | "$0"
+else 
+    while read file; do
+        echo "$file"
+        if [ "${file%.flac}.flac" = "$file" ]; then
+            "$0" "$file"
+        fi
+    done
+fi
+
+
+
+
