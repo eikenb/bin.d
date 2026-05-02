@@ -1,0 +1,22 @@
+#!/bin/sh
+
+alias tmux="tmux -u -L mutt"
+
+# start tmux in background
+tmux new-session -t mutt -s mutt -d
+
+# mutt
+tmux select-window -t mutt:1
+tmux send-keys /usr/bin/mutt ENTER
+tmux send-keys END
+
+# fetch, random
+tmux new-window -t mutt
+tmux select-window -t mutt:2
+# tail
+tmux send-keys "fetchmail"
+
+# enter mutt window
+tmux attach -t mutt
+
+# vim: ft=sh
