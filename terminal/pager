@@ -29,11 +29,11 @@ usage () {
 vim="nvim"
 man=
 esc=
-while getopts gmeh arg; do
+while getopts meh arg; do
     case $arg in
         m) man="true"; shift;;
         e) esc="true"; shift;;
-        h) usage;;
+        h|*) usage;;
     esac
 done
 
@@ -48,7 +48,7 @@ if [ -t 0 ]; then
     if [ -n "$man" ]; then
         # perldoc calls as man viewer w/ tmpfile
         # don't alter the original
-        tmp=`mktemp`
+        tmp=$(mktemp)
         trap "rm -f $tmp; exit" 0 2
         cat "$1" | col -bx > $tmp
         if [ "${vim}" = "nvim" ]; then
