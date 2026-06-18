@@ -105,8 +105,8 @@ case "$package" in
         chmod 750 "$INSTALL_DIR/$COMMAND"
         ;;
     *)
-        echo "Unsupported package format"
-        exit 1
+        cp -v "$package" "$INSTALL_DIR/$COMMAND"
+        chmod 750 "$INSTALL_DIR/$COMMAND"
         ;;
 esac
 
