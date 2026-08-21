@@ -19,62 +19,71 @@
 # 1 - stdout
 # 2 - stderr
 
-usage () {
-    echo "usage: $(basename $0) [options] [FILE]"
-    echo "-m file is man page"
-    echo "-e use AnsiEsc"
-    exit
+usage() {
+  echo "usage: $(basename $0) [options] [FILE]"
+  echo "-m file is man page"
+  echo "-e use AnsiEsc"
+  exit
 }
+
+# my config uses this to disable unneeded (for this) plugins
+export NVIM_DISABLE_PLUGINS="true"
 
 vim="nvim"
 man=
 esc=
 while getopts meh arg; do
-    case $arg in
-        m) man="true"; shift;;
-        e) esc="true"; shift;;
-        h|*) usage;;
-    esac
+  case $arg in
+  m)
+    man="true"
+    shift
+    ;;
+  e)
+    esc="true"
+    shift
+    ;;
+  h | *) usage ;;
+  esac
 done
 
 view="${vim} -R"
 if [ "${vim}" = "vim" ]; then
-    view="${view} -i ${HOME}/.tmp/pager.viminfo"
-    [ -n "$esc" ] && view="$view -c AnsiEsc"
+  view="${view} -i ${HOME}/.tmp/pager.viminfo"
+  [ -n "$esc" ] && view="$view -c AnsiEsc"
 fi
 
 if [ -t 0 ]; then
-    # stdin is open (file on command line)
-    if [ -n "$man" ]; then
-        # perldoc calls as man viewer w/ tmpfile
-        # don't alter the original
-        tmp=$(mktemp)
-        trap "rm -f $tmp; exit" 0 2
-        cat "$1" | col -bx > $tmp
-        if [ "${vim}" = "nvim" ]; then
-            # nvim added :Man which handles RO and highlighting
-            $vim  -c "Man!" -c 'runtime macros/pager.vim' "$tmp"
-        else
-            $view -c 'runtime macros/pager.vim' -c 'set ft=man' "$tmp"
-        fi
+  # stdin is open (file on command line)
+  if [ -n "$man" ]; then
+    # perldoc calls as man viewer w/ tmpfile
+    # don't alter the original
+    tmp=$(mktemp)
+    trap "rm -f $tmp; exit" 0 2
+    cat "$1" | col -bx >$tmp
+    if [ "${vim}" = "nvim" ]; then
+      # nvim added :Man which handles RO and highlighting
+      $vim -c "Man!" -c 'runtime macros/pager.lua' "$tmp"
     else
-        exec $view -c 'runtime macros/pager.vim' "$@"
-#        --cmd "au BufNewFile * cq" "$@"
+      $view -c 'runtime macros/pager.lua' -c 'set ft=man' "$tmp"
     fi
+  else
+    exec $view -c 'runtime macros/pager.lua' "$@"
+    #        --cmd "au BufNewFile * cq" "$@"
+  fi
 elif [ -t 1 ]; then
-    # stdin closed (0) but stdout open
-    # piped input (eg. man viewer)
-    if [ -n "$man" ]; then
-        if [ "${vim}" = "nvim" ]; then
-            # nvim added :Man which handles RO and highlighting
-            exec $vim -c "Man!" -c 'runtime macros/pager.vim' -
-        else
-            exec col -bx | $view -c 'runtime macros/pager.vim' -c 'set ft=man' -
-        fi
+  # stdin closed (0) but stdout open
+  # piped input (eg. man viewer)
+  if [ -n "$man" ]; then
+    if [ "${vim}" = "nvim" ]; then
+      # nvim added :Man which handles RO and highlighting
+      exec $vim -c "Man!" -c 'runtime macros/pager.lua' -
     else
-        exec $view -c 'runtime macros/pager.vim' "$@" -
+      exec col -bx | $view -c 'runtime macros/pager.lua' -c 'set ft=man' -
     fi
+  else
+    exec $view -c 'runtime macros/pager.lua' "$@" -
+  fi
 else
-    # man w/ piped output
-    exec cat
+  # man w/ piped output
+  exec cat
 fi
